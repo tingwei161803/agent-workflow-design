@@ -88,6 +88,12 @@
           '<span class="brand__name" id="brandName"></span>' +
         '</a>' +
         '<div class="appbar__actions">' +
+          (META.repo ?
+            '<a class="gh-star" id="ghStar" href="https://github.com/' + META.repo + '" target="_blank" rel="noopener" ' +
+              'data-repo="' + META.repo + '" title="Star on GitHub" aria-label="Star on GitHub / 在 GitHub 給星星">' +
+              '<span class="material-symbols-rounded gh-star__icon" aria-hidden="true">star</span>' +
+              '<span class="gh-star__count" id="ghStarCount">★</span>' +
+            '</a>' : "") +
           '<button class="icon-btn" id="langToggle" type="button" title="Language" aria-label="Toggle language / 切換語言">' +
             '<span class="material-symbols-rounded">translate</span>' +
             '<span class="icon-btn__txt" id="langLabel">中</span>' +
@@ -224,12 +230,33 @@
   /* =======================================================================
      INIT
      ===================================================================== */
+  /* ---------- GitHub star count (public API, no auth, silent fallback) ---------- */
+  function fmtStars(n) {
+    return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : String(n);
+  }
+  function loadStars() {
+    var a = document.getElementById("ghStar");
+    var el = document.getElementById("ghStarCount");
+    if (!a || !el || typeof fetch !== "function") return;
+    var repo = a.getAttribute("data-repo");
+    if (!repo) return;
+    try {
+      fetch("https://api.github.com/repos/" + repo)
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (j && typeof j.stargazers_count === "number") el.textContent = fmtStars(j.stargazers_count);
+        })
+        .catch(function () { /* offline / rate-limited: leave the placeholder, link still works */ });
+    } catch (e) { /* ignore */ }
+  }
+
   function init() {
     injectChrome();
     applyTheme();
     applyLangChrome();
     refreshChrome();
     wire();
+    loadStars();
     window.LDW.ready = true;
     document.dispatchEvent(new CustomEvent("ldw:shell-ready"));
   }

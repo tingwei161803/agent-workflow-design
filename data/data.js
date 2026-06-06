@@ -19,7 +19,8 @@ window.SITE_META = {
   subtitle: { en: "Six patterns for building effective LLM systems — grounded in primary sources, not hand-waving.",
               zh: "建構有效 LLM 系統的六種模式 — 每個論點都附一手權威佐證，不空談。" },
   footer:   { en: "Static, no build step.",
-              zh: "純靜態，無建置流程。" }
+              zh: "純靜態，無建置流程。" },
+  repo:     "tingwei161803/agent-workflow-design"   // drives the GitHub star button in the app bar
 };
 
 /* Shared source references, reused by the Sources page and cited inline. */
