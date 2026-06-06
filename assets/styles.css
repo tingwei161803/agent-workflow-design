@@ -461,7 +461,7 @@ h1,h2,h3,.brand__name,.page-head h1,.tl-title,.cmp-plan,.stat-value,.tile__value
 /* ---- Flashcards (3D flip) ---- */
 .flash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
 .flip-card { background:transparent; border:none; padding:0; cursor:pointer; perspective:1200px; height:170px; font:inherit; text-align:left; }
-.flip-card__inner { position:relative; width:100%; height:100%; transition:transform .6s var(--ease); transform-style:preserve-3d; }
+.flip-card__inner { display:block; position:relative; width:100%; height:100%; transition:transform .6s var(--ease); transform-style:preserve-3d; }
 .flip-card.flipped .flip-card__inner { transform:rotateY(180deg); }
 .flip-face { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
   padding:20px; border-radius:var(--radius-lg); border:1px solid var(--glass-border); backface-visibility:hidden; -webkit-backface-visibility:hidden; }
