@@ -461,10 +461,16 @@
         var filterCol = cols.filter(function (c) { return c.filter; })[0];
 
         function cellText(row, c) { var v = row[c.key]; return typeof v === "object" ? t(v) : String(v == null ? "" : v); }
+        /* search matches BOTH languages so e.g. "routing" finds 路由 even in zh mode */
+        function cellSearch(row, c) {
+          var v = row[c.key];
+          if (v && typeof v === "object") return ((v.en || "") + " " + (v.zh || "")).toLowerCase();
+          return String(v == null ? "" : v).toLowerCase();
+        }
         function rowMatches(row) {
           if (filterCol && st.filter && cellText(row, filterCol) !== st.filter) return false;
           if (!st.q) return true;
-          return cols.some(function (c) { return cellText(row, c).toLowerCase().indexOf(st.q) !== -1; });
+          return cols.some(function (c) { return cellSearch(row, c).indexOf(st.q) !== -1; });
         }
         function paintHead() {
           thead.innerHTML = "<tr>" + cols.map(function (c) {
@@ -650,11 +656,12 @@
             '<dl class="glossary" id="glossList"></dl>';
           var list = document.getElementById("glossList");
           var search = document.getElementById("glossSearch");
+          function gtext(g) {
+            var a = g.term || {}, d = g.def || {};
+            return ((a.en || "") + " " + (a.zh || "") + " " + (d.en || "") + " " + (d.zh || "")).toLowerCase();
+          }
           function paint(q) {
-            var rows = (p.glossary || []).filter(function (g) {
-              if (!q) return true;
-              return (t(g.term) + " " + t(g.def)).toLowerCase().indexOf(q) !== -1;
-            });
+            var rows = (p.glossary || []).filter(function (g) { return !q || gtext(g).indexOf(q) !== -1; });
             list.innerHTML = rows.length ? rows.map(function (g) {
               return '<div class="gloss-item" data-item><dt class="gloss-term">' + esc(t(g.term)) + "</dt>" +
                 '<dd class="gloss-def">' + esc(t(g.def)) + "</dd></div>";
