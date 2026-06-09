@@ -10,7 +10,7 @@
 
 | | |
 |---|---|
-| 🌐 網站 | <https://tingwei161803.github.io/agent-workflow-design/> |
+| 🌐 網站 | <https://agent-workflow-design.peteraim.com/> |
 
 > 直接點進去就能用，無需安裝。每個子頁都有獨立網址（例如 `…/chaining.html`、`…/agent.html`），方便分享到特定模式。
 
