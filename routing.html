@@ -34,7 +34,12 @@
 </head>
 <body data-page="routing">
   <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
-  <main id="page"></main>
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>2 · 路由 Routing</h1><p class="page-head__sub">工作流 · 先把輸入分類，再分派給專門的後續處理 —— 不同的提示、工具鏈或模型。</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link toc-link--active" href="#what" data-toc="what">是什麼</a><a class="toc-link" href="#how" data-toc="how">運作方式</a><a class="toc-link" href="#when" data-toc="when">何時用</a><a class="toc-link" href="#tradeoffs" data-toc="tradeoffs">取捨</a><a class="toc-link" href="#example" data-toc="example">實例</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">是什麼</h2><p>路由會先對輸入分類，再把它導向專門的後續任務。這是一種「關注點分離」：每個處理器都能針對自己的類別調校，不必把所有狀況塞進一個包山包海的巨型提示。</p></section><section class="article-section" id="how" data-item="" aria-labelledby="how-h"><h2 id="how-h">運作方式</h2><pre><code>輸入 ──▶ [ 分類 LLM ]
+                 ├──▶「退款」 ──▶ 退款處理流程
+                 ├──▶「技術」 ──▶ 技術支援鏈
+                 └──▶「一般」 ──▶ 一般 FAQ 模型</code></pre></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">何時用</h2><blockquote>「適合那種有明確不同類別、分開處理會更好的複雜任務。」— Anthropic</blockquote><ul><li>輸入會落入彼此分明、各自值得專門處理的類別。</li><li>你想把簡單問題送給便宜快速的模型，難題送給更強的模型。</li><li>用一個提示通吃所有情況，反而會傷到沒調校到的那些。</li></ul></section><section class="article-section" id="tradeoffs" data-item="" aria-labelledby="tradeoffs-h"><h2 id="tradeoffs-h">取捨</h2><ul><li>路由準確度是瓶頸 —— 分錯類就會把輸入送到錯的處理器。</li><li>在真正工作之前，多了一個分類步驟（延遲／成本）。</li><li>類別要事先設計好；模糊或重疊的類別會造成搖擺。</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">實例</h2><ul><li>客服分流：把一般／退款／技術問題導向不同流程。</li><li>成本路由：簡單問題給 Claude Haiku，複雜問題給 Claude Sonnet。</li><li>OpenAI 對選模型的看法一致：不是每個任務都需要最聰明的模型。</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Routing</a></li><li><a class="src-link" href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>OpenAI — Selecting your models</a></li></ul></section></div></div>
+</main>
 
   <script src="data/data.js"></script>
   <script src="assets/shell.js"></script>

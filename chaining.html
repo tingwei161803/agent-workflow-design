@@ -34,7 +34,13 @@
 </head>
 <body data-page="chaining">
   <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
-  <main id="page"></main>
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>1 · 提示鏈 Prompt Chaining</h1><p class="page-head__sub">工作流 · 把任務拆成固定的循序步驟，每步 LLM 呼叫處理上一步的輸出，中間可加檢查。</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link toc-link--active" href="#what" data-toc="what">是什麼</a><a class="toc-link" href="#how" data-toc="how">運作方式</a><a class="toc-link" href="#when" data-toc="when">何時用</a><a class="toc-link" href="#tradeoffs" data-toc="tradeoffs">取捨</a><a class="toc-link" href="#example" data-toc="example">實例</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">是什麼</h2><p>提示鏈把任務拆解成固定的步驟序列，每一次 LLM 呼叫都處理前一步的輸出。你可以在步驟之間加上程式化的「關卡（gate）」—— 在繼續之前，先檢查中間結果是否合格。</p></section><section class="article-section" id="how" data-item="" aria-labelledby="how-h"><h2 id="how-h">運作方式</h2><pre><code>輸入
+  └─▶ [ LLM 呼叫 1 ] ──▶ （關卡：通過？）──否──▶ 中止／修正／分支
+                                │ 是
+                                ▼
+                          [ LLM 呼叫 2 ] ──▶ … ──▶ 輸出</code></pre><p>整條路徑都寫在程式裡。LLM 只負責填每一步的內容，從不決定順序 —— 這正是它屬於「工作流」而非「代理」的原因。</p></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">何時用</h2><blockquote>「最適合任務能被乾淨俐落地拆成固定子任務的情境。」— Anthropic</blockquote><ul><li>子任務事先已知，且總是以相同順序執行。</li><li>你願意用多一點延遲，換取每一步更高的準確度。</li><li>後面的步驟仰賴前面步驟產出的乾淨、已驗證結果。</li></ul></section><section class="article-section" id="tradeoffs" data-item="" aria-labelledby="tradeoffs-h"><h2 id="tradeoffs-h">取捨</h2><ul><li>呼叫變多 ＝ 比單一提示更高的延遲與成本。</li><li>僵硬：路徑固定，無法應付設計外的輸入。</li><li>錯誤會累積 —— 早期一步出錯會污染後面全部，所以才需要關卡。</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">實例</h2><ul><li>先產生行銷文案，再把它翻譯成另一種語言。</li><li>先寫文件大綱，依標準驗證後，再寫出完整文件。</li><li>Anthropic 附錄：先草擬再編修，也是同一種形狀。</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Prompt chaining</a></li><li><a class="src-link" href="https://langchain-ai.github.io/langgraph/tutorials/workflows/" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>LangGraph — Workflows（prompt chaining）</a></li></ul></section></div></div>
+</main>
 
   <script src="data/data.js"></script>
   <script src="assets/shell.js"></script>

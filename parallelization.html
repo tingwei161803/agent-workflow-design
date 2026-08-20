@@ -34,7 +34,14 @@
 </head>
 <body data-page="parallelization">
   <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
-  <main id="page"></main>
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>3 · 平行化 Parallelization</h1><p class="page-head__sub">工作流 · 同時跑多個 LLM 呼叫再彙整結果。兩種變體：分節（sectioning）與投票（voting）。</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link toc-link--active" href="#what" data-toc="what">是什麼</a><a class="toc-link" href="#how" data-toc="how">運作方式</a><a class="toc-link" href="#when" data-toc="when">何時用</a><a class="toc-link" href="#tradeoffs" data-toc="tradeoffs">取捨</a><a class="toc-link" href="#example" data-toc="example">實例</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">是什麼</h2><p>平行化讓多個 LLM 同時處理任務，輸出再用程式彙整。Anthropic 點出兩種變體：</p><ul><li>分節（Sectioning）—— 把任務切成彼此獨立的子任務並行跑。</li><li>投票（Voting）—— 同一個任務跑很多次取得多樣輸出（再取共識／任一示警）。</li></ul></section><section class="article-section" id="how" data-item="" aria-labelledby="how-h"><h2 id="how-h">運作方式</h2><pre><code>            ┌─▶ [ LLM A ] ─┐
+  輸入  ────┼─▶ [ LLM B ] ─┼─▶ [ 彙整器 ] ─▶ 輸出
+            └─▶ [ LLM C ] ─┘
+
+  分節：A、B、C ＝ 不同的子任務
+  投票：A、B、C ＝ 同一個任務，重複跑</code></pre></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">何時用</h2><blockquote>「當切分的子任務能平行以加速，或需要多個視角／多次嘗試時很有效。」— Anthropic</blockquote><ul><li>子任務真的彼此獨立（沒有一步要等另一步）。</li><li>在意速度，而且工作能乾淨地展開（fan-out）。</li><li>多次嘗試能提高信心（投票），或讓護欄與主任務並行。</li></ul></section><section class="article-section" id="tradeoffs" data-item="" aria-labelledby="tradeoffs-h"><h2 id="tradeoffs-h">取捨</h2><ul><li>成本會隨平行呼叫數倍增。</li><li>你需要一套合理的彙整規則（多數決、取最大、串接、任一示警）。</li><li>若每個呼叫都有相同盲點，投票反而會掩蓋系統性錯誤。</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">實例</h2><ul><li>分節：一個模型負責篩查輸入是否含不當內容，另一個同時生成回應。</li><li>投票：多個提示同時審查程式碼漏洞 —— 只要任一個發現問題就示警。</li><li>兩個例子都出自 Anthropic 的指南。</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Parallelization</a></li><li><a class="src-link" href="https://github.com/anthropics/anthropic-cookbook/tree/main/patterns/agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic cookbook — agent patterns</a></li></ul></section></div></div>
+</main>
 
   <script src="data/data.js"></script>
   <script src="assets/shell.js"></script>

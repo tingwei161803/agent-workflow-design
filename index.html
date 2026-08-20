@@ -14,12 +14,12 @@
   <title>Agent 工作流模式 · 六種有效 LLM 系統設計</title>
   <meta name="description" content="建構有效 LLM 系統的六種工作流／代理模式，佐證自 Anthropic、OpenAI、Google 等一手權威來源。" />
   <meta name="theme-color" content="#0B0A12" />
-  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/index.html" />
+  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Agent Workflow Patterns" />
   <meta property="og:title" content="Agent 工作流模式 · 六種有效 LLM 系統設計" />
   <meta property="og:description" content="建構有效 LLM 系統的六種工作流／代理模式，佐證自 Anthropic、OpenAI、Google 等一手權威來源。" />
-  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/index.html" />
+  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Agent 工作流模式 · 六種有效 LLM 系統設計" />
   <meta name="twitter:description" content="建構有效 LLM 系統的六種工作流／代理模式，佐證自 Anthropic、OpenAI、Google 等一手權威來源。" />
@@ -34,7 +34,9 @@
 </head>
 <body data-page="home">
   <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
-  <main id="page"></main>
+  <main id="page">
+<header class="page-head"><h1>Agent 工作流模式</h1><p class="page-head__sub">五種工作流模式 ＋ 一種自主代理 — 有效 LLM 系統的基本構件，每個論點都有出處。先看核心概念，再深入每個模式。</p></header><div class="hero__stats"><div class="hero__stat" data-item=""><b class="hero__stat-value" data-count="6">6</b><span class="hero__stat-label">核心模式</span></div><div class="hero__stat" data-item=""><b class="hero__stat-value" data-count="5">5</b><span class="hero__stat-label">工作流模式</span></div><div class="hero__stat" data-item=""><b class="hero__stat-value" data-count="3">3</b><span class="hero__stat-label">權威實驗室來源</span></div><div class="hero__stat" data-item=""><b class="hero__stat-value" data-count="11">11</b><span class="hero__stat-label">參考文獻</span></div></div><div class="grid"><a class="card card--nav" data-item="" href="concept.html" aria-label="核心概念：Workflow 與 Agent"><span class="material-symbols-rounded card__icon" aria-hidden="true">menu_book</span><h3 class="card__title">核心概念：Workflow 與 Agent</h3><p class="card__summary">進入六種模式之前：什麼是「agentic system」、它們共用的基礎元件、何時該用哪種，以及為什麼不同來源對「有幾種模式」說法不一。</p></a><a class="card card--nav" data-item="" href="chaining.html" aria-label="1 · 提示鏈 Prompt Chaining"><span class="material-symbols-rounded card__icon" aria-hidden="true">link</span><h3 class="card__title">1 · 提示鏈 Prompt Chaining</h3><p class="card__summary">工作流 · 把任務拆成固定的循序步驟，每步 LLM 呼叫處理上一步的輸出，中間可加檢查。</p></a><a class="card card--nav" data-item="" href="routing.html" aria-label="2 · 路由 Routing"><span class="material-symbols-rounded card__icon" aria-hidden="true">alt_route</span><h3 class="card__title">2 · 路由 Routing</h3><p class="card__summary">工作流 · 先把輸入分類，再分派給專門的後續處理 —— 不同的提示、工具鏈或模型。</p></a><a class="card card--nav" data-item="" href="parallelization.html" aria-label="3 · 平行化 Parallelization"><span class="material-symbols-rounded card__icon" aria-hidden="true">account_tree</span><h3 class="card__title">3 · 平行化 Parallelization</h3><p class="card__summary">工作流 · 同時跑多個 LLM 呼叫再彙整結果。兩種變體：分節（sectioning）與投票（voting）。</p></a><a class="card card--nav" data-item="" href="orchestrator.html" aria-label="4 · 協調者—工作者 Orchestrator–Workers"><span class="material-symbols-rounded card__icon" aria-hidden="true">hub</span><h3 class="card__title">4 · 協調者—工作者 Orchestrator–Workers</h3><p class="card__summary">工作流 · 由中央 LLM 動態拆解任務、分派給工作者 LLM，再彙整它們的結果。</p></a><a class="card card--nav" data-item="" href="evaluator.html" aria-label="5 · 評估者—優化者 Evaluator–Optimizer"><span class="material-symbols-rounded card__icon" aria-hidden="true">rate_review</span><h3 class="card__title">5 · 評估者—優化者 Evaluator–Optimizer</h3><p class="card__summary">工作流 · 一個 LLM 產生回應，另一個評估並回饋，形成迴圈 —— 反覆迭代精修。</p></a><a class="card card--nav" data-item="" href="agent.html" aria-label="6 · 自主代理 Autonomous Agents"><span class="material-symbols-rounded card__icon" aria-hidden="true">smart_toy</span><h3 class="card__title">6 · 自主代理 Autonomous Agents</h3><p class="card__summary">代理 · 沒有固定路徑。LLM 在迴圈中規劃並行動，靠工具與環境回饋自我導向達成目標。</p></a><a class="card card--nav" data-item="" href="compare.html" aria-label="六種模式比較"><span class="material-symbols-rounded card__icon" aria-hidden="true">table_rows</span><h3 class="card__title">六種模式比較</h3><p class="card__summary">在控制流程、成本／延遲、最適情境與代表範例上並列比較。可依類型篩選、任意欄位排序。</p></a><a class="card card--nav" data-item="" href="practice.html" aria-label="練習"><span class="material-symbols-rounded card__icon" aria-hidden="true">school</span><h3 class="card__title">練習</h3><p class="card__summary">讓它記得住：查術語、翻卡片、再考自己。所有作答只活在這次瀏覽，重整即歸零。</p></a><a class="card card--nav" data-item="" href="sources.html" aria-label="參考來源"><span class="material-symbols-rounded card__icon" aria-hidden="true">menu_book</span><h3 class="card__title">參考來源</h3><p class="card__summary">本站每個論點都能追溯到一手或權威來源。可依出處篩選，點任一連結開啟。</p></a></div>
+</main>
 
   <script src="data/data.js"></script>
   <script src="assets/shell.js"></script>
