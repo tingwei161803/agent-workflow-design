@@ -34,7 +34,16 @@
 </head>
 <body data-page="evaluator">
   <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
-  <main id="page"></main>
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>5 · 評估者—優化者 Evaluator–Optimizer</h1><p class="page-head__sub">工作流 · 一個 LLM 產生回應，另一個評估並回饋，形成迴圈 —— 反覆迭代精修。</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link" href="#what" data-toc="what">是什麼</a><a class="toc-link" href="#how" data-toc="how">運作方式</a><a class="toc-link" href="#when" data-toc="when">何時用</a><a class="toc-link" href="#tradeoffs" data-toc="tradeoffs">取捨</a><a class="toc-link" href="#example" data-toc="example">實例</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">是什麼</h2><p>在評估者—優化者工作流中，一個 LLM 呼叫產生回應，另一個在迴圈中給出評估與回饋。可以想成「作者＋編輯」：草擬、批評、修改、再來一次 —— 直到評估通過為止。</p></section><section class="article-section" id="how" data-item="" aria-labelledby="how-h"><h2 id="how-h">運作方式</h2><pre><code>輸入 ─▶ [ 生成 LLM ] ─▶ 草稿
+                              │
+                              ▼
+                       [ 評估 LLM ]
+                       通過？ ──否──▶ 回饋 ─┐
+                          │ 是               │ （帶著回饋
+                          ▼                  │   回到生成）
+                        輸出  ◀──────────────┘</code></pre></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">何時用</h2><blockquote>「在我們有明確評估標準、且迭代精修能帶來可衡量價值時，特別有效。」— Anthropic</blockquote><ul><li>你能把「好」說清楚，化為生成器可採取行動的回饋。</li><li>每一輪精修都能可衡量地改善輸出。</li><li>一次成形的答案往往不夠好。</li></ul></section><section class="article-section" id="tradeoffs" data-item="" aria-labelledby="tradeoffs-h"><h2 id="tradeoffs-h">取捨</h2><ul><li>迴圈會耗延遲與 token；你需要停止條件（最多幾輪／足夠好的門檻）。</li><li>上限取決於評估者 —— 評審不夠強，精修就不會強。</li><li>學術佐證：Reflexion（Shinn 等，2023）顯示「口語自我反思」能讓代理在多次迭代中變好。</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">實例</h2><ul><li>文學翻譯：評估者能捕捉初稿漏掉的細微語感。</li><li>需要多輪分析與精修的複雜搜尋任務。</li><li>例子出自 Anthropic；自我精修的概念由 Reflexion 形式化。</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Evaluator-optimizer</a></li><li><a class="src-link" href="https://arxiv.org/abs/2303.11366" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Reflexion（Shinn 等，2023）</a></li></ul></section></div></div>
+</main>
 
   <script src="data/data.js"></script>
   <script src="assets/shell.js"></script>
