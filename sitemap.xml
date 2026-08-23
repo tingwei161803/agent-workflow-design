@@ -5,6 +5,9 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://agent-workflow-design.peteraim.com/</loc>
+  </url>
+  <url>
     <loc>https://agent-workflow-design.peteraim.com/agent.html</loc>
   </url>
   <url>
@@ -17,10 +20,40 @@
     <loc>https://agent-workflow-design.peteraim.com/concept.html</loc>
   </url>
   <url>
-    <loc>https://agent-workflow-design.peteraim.com/evaluator.html</loc>
+    <loc>https://agent-workflow-design.peteraim.com/en/</loc>
   </url>
   <url>
-    <loc>https://agent-workflow-design.peteraim.com/</loc>
+    <loc>https://agent-workflow-design.peteraim.com/en/agent.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/chaining.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/compare.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/concept.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/evaluator.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/orchestrator.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/parallelization.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/practice.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/routing.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/en/sources.html</loc>
+  </url>
+  <url>
+    <loc>https://agent-workflow-design.peteraim.com/evaluator.html</loc>
   </url>
   <url>
     <loc>https://agent-workflow-design.peteraim.com/orchestrator.html</loc>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPZSMG4H2L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BPZSMG4H2L');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Core Concept: Workflow vs Agent · Agent Workflow Patterns</title>
+  <meta name="description" content="釐清工作流（預定路徑）與代理（動態自主）的差別、augmented LLM 基礎元件，以及何時該用代理。" />
+  <meta name="theme-color" content="#0B0A12" />
+  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/en/concept.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://agent-workflow-design.peteraim.com/concept.html" />
+  <link rel="alternate" hreflang="en" href="https://agent-workflow-design.peteraim.com/en/concept.html" />
+  <link rel="alternate" hreflang="x-default" href="https://agent-workflow-design.peteraim.com/concept.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Agent Workflow Patterns" />
+  <meta property="og:title" content="核心概念：Workflow 與 Agent 的分界 · Agent 工作流模式" />
+  <meta property="og:description" content="釐清工作流（預定路徑）與代理（動態自主）的差別、augmented LLM 基礎元件，以及何時該用代理。" />
+  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/en/concept.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="核心概念：Workflow 與 Agent 的分界 · Agent 工作流模式" />
+  <meta name="twitter:description" content="釐清工作流（預定路徑）與代理（動態自主）的差別、augmented LLM 基礎元件，以及何時該用代理。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"Agent Workflow Patterns","url":"https://agent-workflow-design.peteraim.com/","description":"釐清工作流（預定路徑）與代理（動態自主）的差別、augmented LLM 基礎元件，以及何時該用代理。","inLanguage":["zh-Hant","en"]}
+  </script>
+</head>
+<body data-page="concept">
+  <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>Core Concept: Workflow vs Agent</h1><p class="page-head__sub">Before the six patterns: what an 'agentic system' is, the building block they all share, when to use which — and why the 'how many patterns' count differs between sources.</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link" href="#building-block" data-toc="building-block">The shared building block: the augmented LLM</a><a class="toc-link" href="#distinction" data-toc="distinction">Workflow vs Agent: the real dividing line</a><a class="toc-link" href="#when" data-toc="when">When to use which — start simple</a><a class="toc-link toc-link--active" href="#counting" data-toc="counting">Six? Five? On the 'how many patterns' question</a></div></nav><div class="article-body prose"><section class="article-section" id="building-block" data-item="" aria-labelledby="building-block-h"><h2 id="building-block-h">The shared building block: the augmented LLM</h2><p>Every pattern on this site is built from one block: a large language model augmented with retrieval, tools, and memory. Anthropic describes a model that can generate its own search queries, select the right tools, and decide what to remember.</p><p>Google's whitepaper frames the same idea as three layers — the model, an orchestration layer that reasons (via ReAct / Chain-of-Thought / Tree-of-Thoughts), and a tools layer that reaches the outside world. Different words, same anatomy.</p><blockquote>Workflows are systems where LLMs and tools are orchestrated through predefined code paths. Agents are systems where LLMs dynamically direct their own processes and tool usage. — Anthropic</blockquote></section><section class="article-section" id="distinction" data-item="" aria-labelledby="distinction-h"><h2 id="distinction-h">Workflow vs Agent: the real dividing line</h2><p>The dividing line is who controls the flow. In a workflow, the control flow is fixed in code you wrote; the LLM fills in the steps. In an agent, the LLM itself decides what to do next and keeps control over how the task gets done.</p><p>OpenAI puts it bluntly: agents are systems that independently accomplish tasks on your behalf. Apps that embed an LLM but don't let it control execution — simple chatbots, single-turn calls, sentiment classifiers — are not agents.</p><h3>What changes when you cross the line</h3><ul><li>Control flow: hand-written code paths → the model's own decisions.</li><li>Predictability: high and testable → lower, emergent at run time.</li><li>Cost &amp; latency: roughly fixed → variable, usually higher.</li><li>Best when: steps are knowable up front → steps are open-ended.</li></ul></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">When to use which — start simple</h2><p>Anthropic's overarching advice: find the simplest solution possible, and only increase complexity when it demonstrably improves outcomes. Agentic systems trade latency and cost for better task performance — so spend that budget deliberately.</p><p>Use a workflow when the task decomposes into predictable steps. Reach for an agent on open-ended problems where you can't predict how many steps are needed or hardcode a fixed path.</p><h3>OpenAI's three triggers for building an agent</h3><ul><li>Complex decision-making — nuanced judgment, exceptions, context-sensitive calls (e.g. refund approval).</li><li>Difficult-to-maintain rules — rule sets that have grown unwieldy and error-prone (e.g. vendor security reviews).</li><li>Heavy reliance on unstructured data — interpreting documents or conversing naturally (e.g. an insurance claim).</li><li>Otherwise: a deterministic solution may suffice.</li></ul></section><section class="article-section" id="counting" data-item="" aria-labelledby="counting-h"><h2 id="counting-h">Six? Five? On the 'how many patterns' question</h2><p>The article that prompted this site talks about 'six patterns'. That count is a presentation choice, not a substantive disagreement — so it's worth pinning down.</p><p>Anthropic's authoritative taxonomy is: one building block (the augmented LLM) + five workflow patterns (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer) + the autonomous agent. Popular write-ups land on 'six' either by counting the five workflows plus the agent, or by promoting tool-use / context-augmentation / reflection to a standalone pattern.</p><aside class="callout" data-item=""><span class="material-symbols-rounded callout__icon" aria-hidden="true">lightbulb</span><span>This site uses Anthropic's set as the spine: 5 workflow patterns + the autonomous-agent pattern (six in total), with the augmented LLM as the shared foundation. Where a popular source diverges from the primary one, we say so rather than picking a side silently.</span></aside><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Building Effective Agents</a></li><li><a class="src-link" href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>OpenAI — A Practical Guide to Building Agents</a></li><li><a class="src-link" href="https://gigaai.studio/articles/agent-workflow-six-patterns" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Reference article (GigaAI) — the starting point</a></li></ul></section></div></div>
+</main>
+
+  <script src="../data/data.js"></script>
+  <script src="../assets/shell.js"></script>
+  <script src="../assets/app.js"></script>
+<p class="lang-alt-link" style="text-align:center;padding:12px;"><a href="/concept.html" hreflang="zh-Hant" rel="alternate" lang="zh-Hant">中文版</a></p>
+</body>
+</html>

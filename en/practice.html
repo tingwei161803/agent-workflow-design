@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPZSMG4H2L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BPZSMG4H2L');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Practice · Agent Workflow Patterns</title>
+  <meta name="description" content="術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。" />
+  <meta name="theme-color" content="#0B0A12" />
+  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/en/practice.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://agent-workflow-design.peteraim.com/practice.html" />
+  <link rel="alternate" hreflang="en" href="https://agent-workflow-design.peteraim.com/en/practice.html" />
+  <link rel="alternate" hreflang="x-default" href="https://agent-workflow-design.peteraim.com/practice.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Agent Workflow Patterns" />
+  <meta property="og:title" content="練習 Practice · Agent 工作流模式" />
+  <meta property="og:description" content="術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。" />
+  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/en/practice.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="練習 Practice · Agent 工作流模式" />
+  <meta name="twitter:description" content="術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"Agent Workflow Patterns","url":"https://agent-workflow-design.peteraim.com/","description":"術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。","inLanguage":["zh-Hant","en"]}
+  </script>
+</head>
+<body data-page="practice">
+  <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
+  <main id="page">
+<header class="page-head"><h1>Practice</h1><p class="page-head__sub">Make it stick: look up the jargon, flip the cards, then test yourself. Everything lives in this session only.</p></header><div class="seg" role="tablist" id="practiceSeg"><button class="seg__btn seg__btn--active" type="button" role="tab" data-tab="glossary"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>Glossary</button><button class="seg__btn" type="button" role="tab" data-tab="flashcards"><span class="material-symbols-rounded" aria-hidden="true">style</span>Flashcards</button><button class="seg__btn" type="button" role="tab" data-tab="quiz"><span class="material-symbols-rounded" aria-hidden="true">quiz</span>Quiz</button></div><div id="practiceView" class="practice-view"><div class="toolbar"><input id="glossSearch" class="search" type="search" autocomplete="off" placeholder="Search terms…" aria-label="Search terms…"></div><dl class="glossary" id="glossList"><div class="gloss-item" data-item=""><dt class="gloss-term">Agentic system</dt><dd class="gloss-def">Umbrella term for both workflows and agents — any system where an LLM helps drive a multi-step task.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Workflow</dt><dd class="gloss-def">LLMs and tools orchestrated through predefined code paths you wrote.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Agent</dt><dd class="gloss-def">An LLM that dynamically directs its own process and tool use to accomplish a task.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Augmented LLM</dt><dd class="gloss-def">The shared building block: a model augmented with retrieval, tools, and memory.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Gate</dt><dd class="gloss-def">A programmatic check between chained steps that validates the intermediate result.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Sectioning</dt><dd class="gloss-def">A parallelization variant: split a task into independent subtasks run at once.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Voting</dt><dd class="gloss-def">A parallelization variant: run the same task several times and take consensus.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Orchestrator</dt><dd class="gloss-def">The central LLM that splits a task into subtasks at run time and synthesizes results.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">ReAct</dt><dd class="gloss-def">Reasoning + acting: a Thought → Action → Observation loop (Yao et al., 2023).</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Reflexion</dt><dd class="gloss-def">Verbal self-reflection that improves an agent across iterations (Shinn et al., 2023).</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Handoff</dt><dd class="gloss-def">In a decentralized multi-agent system, one agent transfers control to another.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Manager pattern</dt><dd class="gloss-def">A central manager agent coordinates specialized agents via tool calls (agents as tools).</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Guardrails</dt><dd class="gloss-def">Explicit limits and checks that keep an agent operating safely within bounds.</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">ACI</dt><dd class="gloss-def">Agent-computer interface: the tool docs/signatures an agent uses — design it carefully.</dd></div></dl></div>
+</main>
+
+  <script src="../data/data.js"></script>
+  <script src="../assets/shell.js"></script>
+  <script src="../assets/app.js"></script>
+<p class="lang-alt-link" style="text-align:center;padding:12px;"><a href="/practice.html" hreflang="zh-Hant" rel="alternate" lang="zh-Hant">中文版</a></p>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPZSMG4H2L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BPZSMG4H2L');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>6 · Autonomous Agents · Agent Workflow Patterns</title>
+  <meta name="description" content="LLM 在迴圈中依環境回饋自主使用工具；ReAct、Reflexion、單一與多代理（manager／decentralized）。" />
+  <meta name="theme-color" content="#0B0A12" />
+  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/en/agent.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://agent-workflow-design.peteraim.com/agent.html" />
+  <link rel="alternate" hreflang="en" href="https://agent-workflow-design.peteraim.com/en/agent.html" />
+  <link rel="alternate" hreflang="x-default" href="https://agent-workflow-design.peteraim.com/agent.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Agent Workflow Patterns" />
+  <meta property="og:title" content="自主代理 Autonomous Agents · Agent 工作流模式" />
+  <meta property="og:description" content="LLM 在迴圈中依環境回饋自主使用工具；ReAct、Reflexion、單一與多代理（manager／decentralized）。" />
+  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/en/agent.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="自主代理 Autonomous Agents · Agent 工作流模式" />
+  <meta name="twitter:description" content="LLM 在迴圈中依環境回饋自主使用工具；ReAct、Reflexion、單一與多代理（manager／decentralized）。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"Agent Workflow Patterns","url":"https://agent-workflow-design.peteraim.com/","description":"LLM 在迴圈中依環境回饋自主使用工具；ReAct、Reflexion、單一與多代理（manager／decentralized）。","inLanguage":["zh-Hant","en"]}
+  </script>
+</head>
+<body data-page="agent">
+  <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>6 · Autonomous Agents</h1><p class="page-head__sub">Agent · No fixed path. The LLM plans and acts in a loop, using tools and environmental feedback to direct itself toward a goal.</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link" href="#what" data-toc="what">What it is</a><a class="toc-link" href="#loop" data-toc="loop">The agent loop (and ReAct)</a><a class="toc-link" href="#internals" data-toc="internals">What's inside an agent</a><a class="toc-link" href="#orchestration" data-toc="orchestration">Single-agent vs multi-agent</a><a class="toc-link" href="#when" data-toc="when">When to use it (and the costs)</a><a class="toc-link toc-link--active" href="#example" data-toc="example">Concrete examples</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">What it is</h2><p>An agent isn't a predefined path. It plans and operates independently, gaining ground truth from the environment at each step (tool results, code execution), and can pause for human feedback at checkpoints or when blocked. Anthropic's reassurance: implementation is often straightforward.</p><blockquote>They are typically just LLMs using tools based on environmental feedback in a loop. — Anthropic</blockquote></section><section class="article-section" id="loop" data-item="" aria-labelledby="loop-h"><h2 id="loop-h">The agent loop (and ReAct)</h2><pre><code>goal ─▶ ┌──────────────────────────────────────────┐
+        │  plan ─▶ act (tool) ─▶ observe ─▶ reflect  │ repeat
+        └──────────────────────────────────────────┘
+          exit when: final-output tool · no tool call ·
+                     error · max turns reached
+
+  ReAct (Yao et al.):  Thought ─▶ Action ─▶ Observation ─▶ ...</code></pre><p>OpenAI describes this 'run' as a while-loop that runs the LLM until an exit condition (a final-output tool, a response with no tool calls, an error, or a max-turns cap).</p></section><section class="article-section" id="internals" data-item="" aria-labelledby="internals-h"><h2 id="internals-h">What's inside an agent</h2><p>Lilian Weng's anatomy: an LLM 'brain' plus three faculties.</p><ul><li>Planning — task decomposition (Chain-of-Thought, Tree-of-Thoughts) and self-reflection (ReAct, Reflexion).</li><li>Memory — short-term (the context window) and long-term (external vector stores for fast retrieval).</li><li>Tool use — calling external APIs/functions to act beyond the model's frozen weights.</li></ul></section><section class="article-section" id="orchestration" data-item="" aria-labelledby="orchestration-h"><h2 id="orchestration-h">Single-agent vs multi-agent</h2><p>OpenAI's advice: maximize a single agent (one model + tools in a loop) first; it keeps complexity and evaluation manageable. Split into multiple agents only when prompts get full of conditionals or tools overlap and confuse the model.</p><ul><li>Manager (agents as tools) — a central manager calls specialized agents via tool calls and keeps control.</li><li>Decentralized (handoffs) — peer agents transfer control to one another based on specialization.</li><li>OpenAI: in the manager pattern edges are tool calls; in the decentralized pattern edges are handoffs.</li></ul></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">When to use it (and the costs)</h2><blockquote>For open-ended problems where it's difficult or impossible to predict the required number of steps, and where you can't hardcode a fixed path. — Anthropic</blockquote><ul><li>Highest autonomy = highest latency, cost, and least predictability — use deliberately.</li><li>Needs guardrails, transparency (show the planning steps), and a well-designed agent-computer interface (ACI).</li><li>Weng's limits: finite context, hard long-horizon planning, and unreliable natural-language tool interfaces.</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">Concrete examples</h2><ul><li>Coding agents resolving real GitHub issues in SWE-bench Verified from a pull-request description alone.</li><li>Anthropic's 'computer use' reference implementation, where Claude operates a computer autonomously.</li><li>Verifiable domains (code with tests) suit agents because results feed back as ground truth.</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Agents</a></li><li><a class="src-link" href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>OpenAI — Orchestration (single vs multi-agent)</a></li><li><a class="src-link" href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Lilian Weng — LLM Powered Autonomous Agents</a></li><li><a class="src-link" href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>ReAct (Yao et al., 2023)</a></li></ul></section></div></div>
+</main>
+
+  <script src="../data/data.js"></script>
+  <script src="../assets/shell.js"></script>
+  <script src="../assets/app.js"></script>
+<p class="lang-alt-link" style="text-align:center;padding:12px;"><a href="/agent.html" hreflang="zh-Hant" rel="alternate" lang="zh-Hant">中文版</a></p>
+</body>
+</html>
