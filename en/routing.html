@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPZSMG4H2L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BPZSMG4H2L');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2 · Routing · Agent Workflow Patterns</title>
+  <meta name="description" content="Workflow · Classify the input first, then send it to a specialized follow-up — a different prompt, tool chain, or model." />
+  <meta name="theme-color" content="#0B0A12" />
+  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/en/routing.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://agent-workflow-design.peteraim.com/routing.html" />
+  <link rel="alternate" hreflang="en" href="https://agent-workflow-design.peteraim.com/en/routing.html" />
+  <link rel="alternate" hreflang="x-default" href="https://agent-workflow-design.peteraim.com/routing.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Agent Workflow Patterns" />
+  <meta property="og:title" content="2 · Routing · Agent Workflow Patterns" />
+  <meta property="og:description" content="Workflow · Classify the input first, then send it to a specialized follow-up — a different prompt, tool chain, or model." />
+  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/en/routing.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="2 · Routing · Agent Workflow Patterns" />
+  <meta name="twitter:description" content="Workflow · Classify the input first, then send it to a specialized follow-up — a different prompt, tool chain, or model." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"Agent Workflow Patterns","url":"https://agent-workflow-design.peteraim.com/en/","description":"Workflow · Classify the input first, then send it to a specialized follow-up — a different prompt, tool chain, or model.","inLanguage":"en"}
+  </script>
+</head>
+<body data-page="routing">
+  <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>2 · Routing</h1><p class="page-head__sub">Workflow · Classify the input first, then send it to a specialized follow-up — a different prompt, tool chain, or model.</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link" href="#what" data-toc="what">What it is</a><a class="toc-link" href="#how" data-toc="how">How it works</a><a class="toc-link" href="#when" data-toc="when">When to use it</a><a class="toc-link" href="#tradeoffs" data-toc="tradeoffs">Trade-offs</a><a class="toc-link toc-link--active" href="#example" data-toc="example">Concrete examples</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">What it is</h2><p>Routing classifies an input and directs it to a specialized follow-up task. This is separation of concerns: each handler can be tuned for its category without bloating one giant do-everything prompt.</p></section><section class="article-section" id="how" data-item="" aria-labelledby="how-h"><h2 id="how-h">How it works</h2><pre><code>Input ──▶ [ Classifier LLM ]
+                   ├──▶ "refund"    ──▶ refund handler
+                   ├──▶ "technical" ──▶ tech-support chain
+                   └──▶ "general"   ──▶ general FAQ model</code></pre></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">When to use it</h2><blockquote>Works well for complex tasks where there are distinct categories that are better handled separately. — Anthropic</blockquote><ul><li>Inputs fall into distinct categories that each deserve their own treatment.</li><li>You want to send easy queries to a cheap/fast model and hard ones to a stronger model.</li><li>Optimizing one prompt for everything hurts the cases it wasn't tuned for.</li></ul></section><section class="article-section" id="tradeoffs" data-item="" aria-labelledby="tradeoffs-h"><h2 id="tradeoffs-h">Trade-offs</h2><ul><li>Routing accuracy is the bottleneck — a misroute sends the input to the wrong handler.</li><li>Adds a classification step (latency / cost) before any real work.</li><li>Categories must be designed; fuzzy or overlapping ones cause flapping.</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">Concrete examples</h2><ul><li>Customer-service triage: route general / refund / technical queries to different processes.</li><li>Cost routing: simple questions to Claude Haiku, complex ones to Claude Sonnet.</li><li>OpenAI agrees on model choice: not every task requires the smartest model.</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Routing</a></li><li><a class="src-link" href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>OpenAI — Selecting your models</a></li></ul></section></div></div>
+</main>
+
+  <script src="../data/data.js"></script>
+  <script src="../assets/shell.js"></script>
+  <script src="../assets/app.js"></script>
+<p class="lang-alt-link" style="text-align:center;padding:12px;"><a href="/routing.html" hreflang="zh-Hant" rel="alternate" lang="zh-Hant">中文版</a></p>
+</body>
+</html>

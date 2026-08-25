@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPZSMG4H2L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BPZSMG4H2L');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>5 · Evaluator–Optimizer · Agent Workflow Patterns</title>
+  <meta name="description" content="Workflow · One LLM generates a response while another evaluates and gives feedback, in a loop — iterative refinement." />
+  <meta name="theme-color" content="#0B0A12" />
+  <link rel="canonical" href="https://agent-workflow-design.peteraim.com/en/evaluator.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://agent-workflow-design.peteraim.com/evaluator.html" />
+  <link rel="alternate" hreflang="en" href="https://agent-workflow-design.peteraim.com/en/evaluator.html" />
+  <link rel="alternate" hreflang="x-default" href="https://agent-workflow-design.peteraim.com/evaluator.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Agent Workflow Patterns" />
+  <meta property="og:title" content="5 · Evaluator–Optimizer · Agent Workflow Patterns" />
+  <meta property="og:description" content="Workflow · One LLM generates a response while another evaluates and gives feedback, in a loop — iterative refinement." />
+  <meta property="og:url" content="https://agent-workflow-design.peteraim.com/en/evaluator.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="5 · Evaluator–Optimizer · Agent Workflow Patterns" />
+  <meta name="twitter:description" content="Workflow · One LLM generates a response while another evaluates and gives feedback, in a loop — iterative refinement." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"Agent Workflow Patterns","url":"https://agent-workflow-design.peteraim.com/en/","description":"Workflow · One LLM generates a response while another evaluates and gives feedback, in a loop — iterative refinement.","inLanguage":"en"}
+  </script>
+</head>
+<body data-page="evaluator">
+  <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
+  <main id="page">
+<div class="reading-progress" id="readingProgress" aria-hidden="true" style="width: 0%;"></div><header class="page-head"><h1>5 · Evaluator–Optimizer</h1><p class="page-head__sub">Workflow · One LLM generates a response while another evaluates and gives feedback, in a loop — iterative refinement.</p></header><div class="article-layout"><nav class="toc" aria-label="Contents"><div class="toc__inner"><a class="toc-link" href="#what" data-toc="what">What it is</a><a class="toc-link" href="#how" data-toc="how">How it works</a><a class="toc-link" href="#when" data-toc="when">When to use it</a><a class="toc-link" href="#tradeoffs" data-toc="tradeoffs">Trade-offs</a><a class="toc-link toc-link--active" href="#example" data-toc="example">Concrete examples</a></div></nav><div class="article-body prose"><section class="article-section" id="what" data-item="" aria-labelledby="what-h"><h2 id="what-h">What it is</h2><p>In the evaluator-optimizer workflow, one LLM call generates a response while another provides evaluation and feedback in a loop. Think writer + editor: draft, critique, revise, repeat — until the evaluation passes.</p></section><section class="article-section" id="how" data-item="" aria-labelledby="how-h"><h2 id="how-h">How it works</h2><pre><code>Input ─▶ [ Generator LLM ] ─▶ draft
+                                  │
+                                  ▼
+                          [ Evaluator LLM ]
+                          pass? ──no──▶ feedback ─┐
+                            │ yes                  │ (loop back
+                            ▼                      │  to generator)
+                          Output  ◀────────────────┘</code></pre></section><section class="article-section" id="when" data-item="" aria-labelledby="when-h"><h2 id="when-h">When to use it</h2><blockquote>Particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. — Anthropic</blockquote><ul><li>You can articulate what 'good' looks like as feedback the generator can act on.</li><li>Each round of refinement measurably improves the output.</li><li>A first-pass answer is rarely good enough on its own.</li></ul></section><section class="article-section" id="tradeoffs" data-item="" aria-labelledby="tradeoffs-h"><h2 id="tradeoffs-h">Trade-offs</h2><ul><li>The loop costs latency and tokens; you need a stopping criterion (max rounds / good-enough threshold).</li><li>Only as good as the evaluator — a weak judge yields weak refinement.</li><li>Academic grounding: Reflexion (Shinn et al., 2023) shows verbal self-reflection improves an agent across iterations.</li></ul></section><section class="article-section" id="example" data-item="" aria-labelledby="example-h"><h2 id="example-h">Concrete examples</h2><ul><li>Literary translation, where an evaluator captures nuances the first pass missed.</li><li>Complex search that needs multiple rounds of analysis and refinement.</li><li>Examples from Anthropic; the self-refinement idea is formalized by Reflexion.</li></ul><ul class="src-links"><li><a class="src-link" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Anthropic — Evaluator-optimizer</a></li><li><a class="src-link" href="https://arxiv.org/abs/2303.11366" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">north_east</span>Reflexion (Shinn et al., 2023)</a></li></ul></section></div></div>
+</main>
+
+  <script src="../data/data.js"></script>
+  <script src="../assets/shell.js"></script>
+  <script src="../assets/app.js"></script>
+<p class="lang-alt-link" style="text-align:center;padding:12px;"><a href="/evaluator.html" hreflang="zh-Hant" rel="alternate" lang="zh-Hant">中文版</a></p>
+</body>
+</html>
