@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="dark">
+<html lang="zh-Hant" data-theme="light">
 <head>
   <meta charset="UTF-8" />
+  <script>/* theme before first paint: saved choice, else the system setting */try{var t=localStorage.getItem('theme');if(t!=='dark'&&t!=='light'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPZSMG4H2L"></script>
   <script>
@@ -13,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>練習 Practice · Agent 工作流模式</title>
   <meta name="description" content="術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。" />
-  <meta name="theme-color" content="#0B0A12" />
+  <meta name="theme-color" content="#EDF1F4" />
   <link rel="canonical" href="https://agent-workflow-design.peteraim.com/practice.html" />
   <link rel="alternate" hreflang="zh-Hant" href="https://agent-workflow-design.peteraim.com/practice.html" />
   <link rel="alternate" hreflang="en" href="https://agent-workflow-design.peteraim.com/en/practice.html" />
@@ -28,8 +29,7 @@
   <meta name="twitter:description" content="術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebSite","name":"Agent Workflow Patterns","url":"https://agent-workflow-design.peteraim.com/","description":"術語速查、翻卡與隨堂測驗，幫你記住六種 agent 工作流模式。","inLanguage":"zh-Hant"}
@@ -42,10 +42,11 @@
 <body data-page="practice">
   <!-- shell.js injects the app bar, cross-page nav, footer and dialog around this -->
   <main id="page">
-<header class="page-head"><h1>練習</h1><p class="page-head__sub">讓它記得住：查術語、翻卡片、再考自己。所有作答只活在這次瀏覽，重整即歸零。</p></header><div class="seg" role="tablist" id="practiceSeg"><button class="seg__btn seg__btn--active" type="button" role="tab" data-tab="glossary"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span>詞彙表</button><button class="seg__btn" type="button" role="tab" data-tab="flashcards"><span class="material-symbols-rounded" aria-hidden="true">style</span>翻卡</button><button class="seg__btn" type="button" role="tab" data-tab="quiz"><span class="material-symbols-rounded" aria-hidden="true">quiz</span>測驗</button></div><div id="practiceView" class="practice-view"><div class="toolbar"><input id="glossSearch" class="search" type="search" autocomplete="off" placeholder="搜尋術語…" aria-label="搜尋術語…"></div><dl class="glossary" id="glossList"><div class="gloss-item" data-item=""><dt class="gloss-term">agentic system（代理式系統）</dt><dd class="gloss-def">工作流與代理的統稱 —— 任何由 LLM 協助推動多步任務的系統。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Workflow（工作流）</dt><dd class="gloss-def">LLM 與工具透過「你寫好的、預先定義的程式路徑」被編排。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Agent（代理）</dt><dd class="gloss-def">由 LLM 動態主導自己的流程與工具使用，以完成任務。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Augmented LLM（被增強的 LLM）</dt><dd class="gloss-def">共用的基礎構件：被檢索、工具、記憶增強過的模型。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Gate（關卡）</dt><dd class="gloss-def">提示鏈步驟之間的程式化檢查，用來驗證中間結果是否合格。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Sectioning（分節）</dt><dd class="gloss-def">平行化的變體：把任務切成獨立子任務同時跑。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Voting（投票）</dt><dd class="gloss-def">平行化的變體：同一任務跑多次，取共識。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Orchestrator（協調者）</dt><dd class="gloss-def">中央 LLM，在執行時把任務拆成子任務並彙整結果。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">ReAct</dt><dd class="gloss-def">推理＋行動：思考 → 行動 → 觀察的迴圈（Yao 等，2023）。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Reflexion</dt><dd class="gloss-def">口語自我反思，讓代理在多次迭代中改善（Shinn 等，2023）。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Handoff（交接）</dt><dd class="gloss-def">在去中心化的多代理系統中，一個代理把控制權交給另一個。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Manager pattern</dt><dd class="gloss-def">中央管理者代理透過工具呼叫協調各專門代理（代理即工具）。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Guardrails（護欄）</dt><dd class="gloss-def">明確的限制與檢查，讓代理在安全範圍內運作。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">ACI（代理—電腦介面）</dt><dd class="gloss-def">Agent-Computer Interface：代理使用的工具文件／簽名 —— 要仔細設計。</dd></div></dl></div>
+<header class="page-head"><h1>練習</h1><p class="page-head__sub">讓它記得住：查術語、翻卡片、再考自己。所有作答只活在這次瀏覽，重整即歸零。</p></header><div class="seg" role="tablist" id="practiceSeg"><button class="seg__btn seg__btn--active" type="button" role="tab" data-tab="glossary">詞彙表</button><button class="seg__btn" type="button" role="tab" data-tab="flashcards">翻卡</button><button class="seg__btn" type="button" role="tab" data-tab="quiz">測驗</button></div><div id="practiceView" class="practice-view"><div class="toolbar"><input id="glossSearch" class="search" type="search" autocomplete="off" placeholder="搜尋術語…" aria-label="搜尋術語…"></div><dl class="glossary" id="glossList"><div class="gloss-item" data-item=""><dt class="gloss-term">agentic system（代理式系統）</dt><dd class="gloss-def">工作流與代理的統稱 —— 任何由 LLM 協助推動多步任務的系統。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Workflow（工作流）</dt><dd class="gloss-def">LLM 與工具透過「你寫好的、預先定義的程式路徑」被編排。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Agent（代理）</dt><dd class="gloss-def">由 LLM 動態主導自己的流程與工具使用，以完成任務。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Augmented LLM（被增強的 LLM）</dt><dd class="gloss-def">共用的基礎構件：被檢索、工具、記憶增強過的模型。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Gate（關卡）</dt><dd class="gloss-def">提示鏈步驟之間的程式化檢查，用來驗證中間結果是否合格。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Sectioning（分節）</dt><dd class="gloss-def">平行化的變體：把任務切成獨立子任務同時跑。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Voting（投票）</dt><dd class="gloss-def">平行化的變體：同一任務跑多次，取共識。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Orchestrator（協調者）</dt><dd class="gloss-def">中央 LLM，在執行時把任務拆成子任務並彙整結果。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">ReAct</dt><dd class="gloss-def">推理＋行動：思考 → 行動 → 觀察的迴圈（Yao 等，2023）。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Reflexion</dt><dd class="gloss-def">口語自我反思，讓代理在多次迭代中改善（Shinn 等，2023）。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Handoff（交接）</dt><dd class="gloss-def">在去中心化的多代理系統中，一個代理把控制權交給另一個。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Manager pattern</dt><dd class="gloss-def">中央管理者代理透過工具呼叫協調各專門代理（代理即工具）。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">Guardrails（護欄）</dt><dd class="gloss-def">明確的限制與檢查，讓代理在安全範圍內運作。</dd></div><div class="gloss-item" data-item=""><dt class="gloss-term">ACI（代理—電腦介面）</dt><dd class="gloss-def">Agent-Computer Interface：代理使用的工具文件／簽名 —— 要仔細設計。</dd></div></dl></div>
 </main>
 
   <script src="data/data.js"></script>
+  <script src="assets/diagrams.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/app.js"></script>
 <p class="lang-alt-link" style="text-align:center;padding:12px;"><a href="/en/practice.html" hreflang="en" rel="alternate" lang="en">English version</a></p>

@@ -41,6 +41,28 @@
       return '<header class="page-head"><h1>' + esc(t(p.title)) + "</h1>" + sub + "</header>";
     }
 
+    /* page-level UI strings that aren't content (content lives in data.js) */
+    var UI = {
+      en: { ascii: "Text version of this diagram", where: "Where this pattern sits on the spectrum",
+            toc: "On this page", prev: "Previous pattern", next: "Next pattern", then: "Then",
+            more: "More patterns" },
+      zh: { ascii: "這張圖的純文字版", where: "這個模式在光譜上的位置",
+            toc: "本頁目錄", prev: "上一個模式", next: "下一個模式", then: "接著",
+            more: "其他模式" }
+    };
+    var AWD = window.AWD || { glyph: function () { return ""; }, diagram: function () { return ""; }, legend: function () { return ""; } };
+
+    /* the predictability ↔ autonomy axis with the six patterns on it */
+    function spectrumBlock(items, c, compact) {
+      return '<figure class="spectrum' + (compact ? " spectrum--compact" : "") + '">' +
+        '<div class="spectrum__zones" aria-hidden="true"><span>' + esc(t(c.workflows)) + "</span><span>" + esc(t(c.agents)) + "</span></div>" +
+        '<ol class="spectrum__list">' + items + "</ol>" +
+        '<div class="spectrum__axis" aria-hidden="true"><i></i></div>' +
+        '<div class="spectrum__ends"><span>' + esc(t(c.lo)) + "</span><span>" + esc(t(c.hi)) + "</span></div>" +
+        '<figcaption class="vh">' + esc(t(c.axis)) + "</figcaption>" +
+        "</figure>";
+    }
+
     function barChart(series, accent) {
       var W = 520, H = 240, padL = 16, padR = 16, padT = 16, padB = 44;
       var plotW = W - padL - padR, plotH = H - padT - padB;
@@ -90,23 +112,87 @@
        ===================================================================== */
     var RENDERERS = {
 
-      /* ---- hub: hero stats + a card linking to every other page ---- */
+      /* ---- hub: the predictability ↔ autonomy spectrum, then the ladder ---- */
       hub: function (p) {
-        var stats = (p.stats || []).map(function (s) {
-          return '<div class="hero__stat" data-item>' +
-            '<b class="hero__stat-value" data-count="' + esc(String(s.value)) + '">0</b>' +
-            '<span class="hero__stat-label">' + esc(t(s.label)) + "</span></div>";
+        var c = p.copy || {}, lang = L.state.lang;
+        var patterns = L.pages.filter(function (q) { return q.diagram; });
+        var cmp = L.pages.filter(function (q) { return q.slug === "compare"; })[0] || {};
+        var concept = L.pages.filter(function (q) { return q.slug === "concept"; })[0];
+        function row(slug) { return (cmp.rows || []).filter(function (x) { return x.slug === slug; })[0] || {}; }
+
+        var items = patterns.map(function (q, i) {
+          var isAgent = i === patterns.length - 1;
+          return '<li class="spectrum__item' + (isAgent ? " spectrum__item--agent" : "") + '" style="--i:' + i + '">' +
+            '<a href="' + esc(L.pageHref(q)) + '">' +
+              '<span class="spectrum__no">' + (i + 1) + "</span>" +
+              AWD.glyph(q.diagram) +
+              '<span class="spectrum__name">' + esc(t(q.nav)) + "</span>" +
+            "</a></li>";
         }).join("");
-        var cards = L.pages.filter(function (q) { return q.slug !== "home"; }).map(function (q) {
-          return '<a class="card card--nav" data-item href="' + esc(L.pageHref(q)) + '" ' +
-              'aria-label="' + esc(t(q.title)) + '">' +
-            '<span class="material-symbols-rounded card__icon" aria-hidden="true">' + esc(q.icon || "label") + "</span>" +
-            '<h3 class="card__title">' + esc(t(q.title)) + "</h3>" +
-            '<p class="card__summary">' + esc(t(q.subtitle)) + "</p></a>";
+
+        var specs = (p.stats || []).map(function (s) {
+          return "<div><dt>" + esc(t(s.label)) + "</dt><dd>" + esc(String(s.value)) + "</dd></div>";
         }).join("");
-        return head(p) +
-          (stats ? '<div class="hero__stats">' + stats + "</div>" : "") +
-          '<div class="grid">' + cards + "</div>";
+
+        var ladder = patterns.map(function (q, i) {
+          var rw = row(q.slug), lv = rw.costLevel || 0, segs = "";
+          for (var k = 1; k <= 5; k++) segs += '<i class="' + (k <= lv ? "on" : "") + '"></i>';
+          var kind = rw.kind ? t(rw.kind) : "";
+          return '<li class="rung">' +
+            '<a class="rung__link" href="' + esc(L.pageHref(q)) + '">' +
+              '<span class="rung__fig">' + AWD.glyph(q.diagram) + "</span>" +
+              '<span class="rung__text">' +
+                '<span class="rung__title"><span class="rung__no">' + (i + 1) + "</span>" + esc(t(q.title).replace(/^\d+\s*·\s*/, "")) + "</span>" +
+                '<span class="rung__sum">' + esc(t(q.subtitle).replace(/^[^·]+·\s*/, "")) + "</span>" +
+              "</span>" +
+              '<span class="rung__meta">' +
+                (kind ? '<span class="kind kind--' + (q.slug === "agent" ? "agent" : "wf") + '">' + esc(kind) + "</span>" : "") +
+                '<span class="meter" role="img" aria-label="' + esc(t(c.cost) + " " + t(rw.cost)) + '">' +
+                  '<span class="meter__k">' + esc(t(c.cost)) + "</span>" +
+                  '<span class="meter__bar" aria-hidden="true">' + segs + "</span>" +
+                  '<span class="meter__v">' + esc(t(rw.cost)) + "</span></span>" +
+                (rw.bestfor ? '<span class="rung__best"><b>' + esc(t(c.bestfor)) + "</b>" + esc(t(rw.bestfor)) + "</span>" : "") +
+              "</span>" +
+            "</a></li>";
+        }).join("");
+
+        /* the dividing line, quoted straight from the concept page */
+        var line = "";
+        if (concept) {
+          var secs = concept.sections || [];
+          var quote = ((secs[0] || {}).blocks || []).filter(function (b) { return b.type === "quote"; })[0];
+          var para = ((secs[1] || {}).blocks || []).filter(function (b) { return b.type === "p"; })[0];
+          line = '<section class="band" aria-labelledby="line-h"><div class="band__text">' +
+              '<h2 id="line-h">' + esc(t(c.lineH)) + "</h2>" +
+              (para ? "<p>" + esc(t(para.text)) + "</p>" : "") +
+              (quote ? "<blockquote>" + esc(t(quote.text)) + "</blockquote>" : "") +
+              '<a class="btn btn--quiet" href="' + esc(L.pageHref(concept)) + '">' + esc(t(c.lineLink)) + "</a>" +
+            "</div>" +
+            '<figure class="sheet band__fig">' + AWD.diagram("augmented", lang) +
+              "<figcaption>" + esc(t(c.blockCap)) + "</figcaption></figure></section>";
+        }
+
+        var next = L.pages.filter(function (q) { return !q.diagram && q.slug !== "home" && q.slug !== "concept"; }).map(function (q) {
+          return '<li><a href="' + esc(L.pageHref(q)) + '"><b>' + esc(t(q.title)) + "</b><span>" + esc(t(q.subtitle)) + "</span></a></li>";
+        }).join("");
+
+        return '<header class="hero">' +
+            '<h1 class="hero__title">' + esc(t(p.title)) + "</h1>" +
+            '<p class="hero__sub">' + esc(t(p.subtitle)) + "</p>" +
+            '<div class="hero__cta">' +
+              (concept ? '<a class="btn" href="' + esc(L.pageHref(concept)) + '">' + esc(t(c.start)) + "</a>" : "") +
+              '<a class="btn btn--quiet" href="compare.html">' + esc(t(c.compare)) + "</a>" +
+            "</div>" +
+          "</header>" +
+          spectrumBlock(items, c) +
+          (specs ? '<dl class="specs">' + specs + "</dl>" : "") +
+          '<section class="ladder" aria-labelledby="ladder-h">' +
+            '<div class="section-head"><h2 id="ladder-h">' + esc(t(c.ladderH)) + "</h2>" +
+            '<p>' + esc(t(c.ladderSub)) + "</p></div>" +
+            '<ol class="rungs">' + ladder + "</ol></section>" +
+          line +
+          '<section class="next" aria-labelledby="next-h"><h2 id="next-h">' + esc(t(c.nextH)) + "</h2>" +
+            '<ul class="next__list">' + next + "</ul></section>";
       },
 
       /* ---- gallery: search + chips + card grid + dialog ---- */
@@ -127,8 +213,9 @@
           '<div class="grid" id="grid"></div>';
       },
 
-      /* ---- article: sticky TOC + prose + reading progress ---- */
+      /* ---- article: drawing (pattern pages) + sticky TOC + prose ---- */
       article: function (p) {
+        var lang = L.state.lang, U = UI[lang] || UI.en;
         var toc = (p.sections || []).map(function (s) {
           return '<a class="toc-link" href="#' + esc(s.id) + '" data-toc="' + esc(s.id) + '">' + esc(t(s.heading)) + "</a>";
         }).join("");
@@ -136,29 +223,67 @@
           var blocks = (s.blocks || []).map(function (b) {
             if (b.type === "h3") return "<h3>" + esc(t(b.text)) + "</h3>";
             if (b.type === "quote") return "<blockquote>" + esc(t(b.text)) + "</blockquote>";
-            if (b.type === "code") return "<pre><code>" + esc(t(b.text)) + "</code></pre>";
-            if (b.type === "note") return '<aside class="callout" data-item><span class="material-symbols-rounded callout__icon" aria-hidden="true">lightbulb</span><span>' + esc(t(b.text)) + "</span></aside>";
+            if (b.type === "diagram") return '<figure class="sheet sheet--inline">' + AWD.diagram(b.key, lang) + "</figure>";
+            if (b.type === "code") {
+              /* pattern pages draw this flow as SVG up top; the ASCII stays as its text version */
+              if (p.diagram) return '<details class="ascii"><summary>' + esc(U.ascii) + "</summary><pre><code>" + esc(t(b.text)) + "</code></pre></details>";
+              return "<pre><code>" + esc(t(b.text)) + "</code></pre>";
+            }
+            if (b.type === "note") return '<aside class="callout">' + esc(t(b.text)) + "</aside>";
             if (b.type === "links") {
               var lis = (b.items || []).map(function (li) {
-                return '<li><a class="src-link" href="' + esc(li.url) + '" target="_blank" rel="noopener">' +
-                  '<span class="material-symbols-rounded" aria-hidden="true">north_east</span>' + esc(t(li.label)) + "</a></li>";
+                return '<li><a class="src-link" href="' + esc(li.url) + '" target="_blank" rel="noopener">' + esc(t(li.label)) + "</a></li>";
               }).join("");
               return '<ul class="src-links">' + lis + "</ul>";
             }
             if (b.type === "ul") {
-              var arr = (b.items && (b.items[L.state.lang] || b.items.en || b.items.zh)) || [];
+              var arr = (b.items && (b.items[lang] || b.items.en || b.items.zh)) || [];
               return "<ul>" + arr.map(function (li) { return "<li>" + esc(li) + "</li>"; }).join("") + "</ul>";
             }
             return "<p>" + esc(t(b.text)) + "</p>";
           }).join("");
-          return '<section class="article-section" id="' + esc(s.id) + '" data-item ' +
+          return '<section class="article-section" id="' + esc(s.id) + '" ' +
             'aria-labelledby="' + esc(s.id) + '-h"><h2 id="' + esc(s.id) + '-h">' + esc(t(s.heading)) + "</h2>" + blocks + "</section>";
         }).join("");
+
+        var patterns = L.pages.filter(function (q) { return q.diagram; });
+        var no = L.patternNo(p);
+        var kicker = "", figure = "", pager = "";
+        var sub = t(p.subtitle), kind = "";
+        if (no) {
+          var m = sub.match(/^([^·]+)·\s*/);
+          if (m) { kind = m[1].trim(); sub = sub.slice(m[0].length); }
+          kicker = '<nav class="locator" aria-label="' + esc(U.where) + '"><ol>' + patterns.map(function (q, i) {
+              var here = q === p;
+              return '<li' + (here ? ' class="here"' : "") + (i === patterns.length - 1 ? ' data-agent=""' : "") + '><a href="' + esc(L.pageHref(q)) + '"' +
+                (here ? ' aria-current="page"' : "") + ' title="' + esc(t(q.title)) + '"><span>' + (i + 1) + "</span></a></li>";
+            }).join("") + "</ol>" +
+            '<span class="locator__kind kind kind--' + (p.slug === "agent" ? "agent" : "wf") + '">' + esc(kind) + "</span></nav>";
+          figure = '<figure class="sheet sheet--hero">' + AWD.diagram(p.diagram, lang) +
+            "<figcaption>" + AWD.legend(lang) + "</figcaption></figure>";
+          var prev = patterns[no - 2], nxt = patterns[no];
+          pager = '<nav class="pager" aria-label="' + esc(U.more) + '">' +
+            (prev ? '<a class="pager__prev" href="' + esc(L.pageHref(prev)) + '"><span>' + esc(U.prev) + "</span><b>" + esc(t(prev.title)) + "</b></a>" : "<span></span>") +
+            (nxt ? '<a class="pager__next" href="' + esc(L.pageHref(nxt)) + '"><span>' + esc(U.next) + "</span><b>" + esc(t(nxt.title)) + "</b></a>" :
+              '<a class="pager__next" href="compare.html"><span>' + esc(U.then) + "</span><b>" + esc(t((L.pages.filter(function (q) { return q.slug === "compare"; })[0] || {}).title)) + "</b></a>") +
+            "</nav>";
+        } else if (p.slug === "concept") {
+          var home = L.pages[0] || {}, c = home.copy || {};
+          figure = spectrumBlock(patterns.map(function (q, i) {
+            return '<li class="spectrum__item' + (i === patterns.length - 1 ? " spectrum__item--agent" : "") + '" style="--i:' + i + '">' +
+              '<a href="' + esc(L.pageHref(q)) + '"><span class="spectrum__no">' + (i + 1) + "</span>" + AWD.glyph(q.diagram) +
+              '<span class="spectrum__name">' + esc(t(q.nav)) + "</span></a></li>";
+          }).join(""), c, true);
+        }
+
         return '<div class="reading-progress" id="readingProgress" aria-hidden="true"></div>' +
-          head(p) +
+          '<header class="page-head' + (no ? " page-head--pattern" : "") + '">' + kicker +
+            "<h1>" + esc(t(p.title)) + "</h1>" +
+            (sub ? '<p class="page-head__sub">' + esc(sub) + "</p>" : "") + "</header>" +
+          figure +
           '<div class="article-layout">' +
-            '<nav class="toc" aria-label="Contents"><div class="toc__inner">' + toc + "</div></nav>" +
-            '<div class="article-body prose">' + body + "</div>" +
+            '<nav class="toc" aria-label="' + esc(U.toc) + '"><div class="toc__inner">' + toc + "</div></nav>" +
+            '<div class="article-body prose">' + body + pager + "</div>" +
           "</div>";
       },
 
@@ -216,7 +341,7 @@
               'aria-label="' + (L.state.lang === "en" ? "Search" : "搜尋") + '" />' +
             '<div class="chips" id="tableChips"></div>' +
           "</div>" +
-          '<div class="table-wrap"><table class="data-table" id="dataTable"><thead></thead><tbody></tbody></table></div>';
+          '<div class="table-wrap"><table class="data-table data-table--' + esc(p.slug) + '" id="dataTable"><thead></thead><tbody></tbody></table></div>';
       },
 
       /* ---- bento: asymmetric tile grid ---- */
@@ -328,12 +453,9 @@
         var L3 = lang === "en" ? "Quiz" : "測驗";
         return head(p) +
           '<div class="seg" role="tablist" id="practiceSeg">' +
-            '<button class="seg__btn seg__btn--active" type="button" role="tab" data-tab="glossary">' +
-              '<span class="material-symbols-rounded" aria-hidden="true">menu_book</span>' + esc(L1) + "</button>" +
-            '<button class="seg__btn" type="button" role="tab" data-tab="flashcards">' +
-              '<span class="material-symbols-rounded" aria-hidden="true">style</span>' + esc(L2) + "</button>" +
-            '<button class="seg__btn" type="button" role="tab" data-tab="quiz">' +
-              '<span class="material-symbols-rounded" aria-hidden="true">quiz</span>' + esc(L3) + "</button>" +
+            '<button class="seg__btn seg__btn--active" type="button" role="tab" data-tab="glossary">' + esc(L1) + "</button>" +
+            '<button class="seg__btn" type="button" role="tab" data-tab="flashcards">' + esc(L2) + "</button>" +
+            '<button class="seg__btn" type="button" role="tab" data-tab="quiz">' + esc(L3) + "</button>" +
           "</div>" +
           '<div id="practiceView" class="practice-view"></div>';
       }
@@ -343,7 +465,7 @@
        WIRING (interactions) — keyed by layout, run after innerHTML is set
        ===================================================================== */
     var WIRE = {
-      hub: function () { animateCounters(); },
+      hub: function () { /* static; the spectrum draws itself in CSS */ },
 
       gallery: function (p) {
         var grid = document.getElementById("grid");
@@ -497,16 +619,29 @@
             rows.sort(function (a, b) {
               var va = a[col.key], vb = b[col.key];
               if (col.type === "num") return (Number(va) - Number(vb)) * st.dir;
+              if (col.key === "cost" && a.costLevel && b.costLevel) return (a.costLevel - b.costLevel) * st.dir;
               return String(typeof va === "object" ? t(va) : va).localeCompare(String(typeof vb === "object" ? t(vb) : vb)) * st.dir;
             });
           }
           tbody.innerHTML = rows.map(function (row) {
-            return "<tr data-item>" + cols.map(function (c) {
+            return "<tr>" + cols.map(function (c, ci) {
+              var lab = ' data-label="' + esc(t(c.label)) + '"';
               if (c.type === "link") {
                 var u = row[c.key];
-                return '<td><a class="row-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u) + "</a></td>";
+                return "<td" + lab + ' class="td-link"><a class="row-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u.replace(/^https?:\/\//, "")) + "</a></td>";
               }
-              return "<td>" + esc(cellText(row, c)) + "</td>";
+              if (ci === 0 && row.slug) {
+                return '<th scope="row" class="td-lead"><a href="' + esc(row.slug) + '.html">' + AWD.glyph(row.slug) +
+                  "<span>" + esc(cellText(row, c)) + "</span></a></th>";
+              }
+              if (ci === 0) return '<th scope="row" class="td-lead">' + esc(cellText(row, c)) + "</th>";
+              if (c.type === "tag") return "<td" + lab + '><span class="kind kind--' + (!row.slug ? "tag" : row.slug === "agent" ? "agent" : "wf") + '">' + esc(cellText(row, c)) + "</span></td>";
+              if (c.key === "cost" && row.costLevel) {
+                var segs = "";
+                for (var k = 1; k <= 5; k++) segs += '<i class="' + (k <= row.costLevel ? "on" : "") + '"></i>';
+                return "<td" + lab + '><span class="meter"><span class="meter__bar" aria-hidden="true">' + segs + '</span><span class="meter__v">' + esc(cellText(row, c)) + "</span></span></td>";
+              }
+              return "<td" + lab + ">" + esc(cellText(row, c)) + "</td>";
             }).join("") + "</tr>";
           }).join("");
         }

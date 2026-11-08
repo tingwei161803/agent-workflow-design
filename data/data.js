@@ -44,7 +44,7 @@ window.SITE_PAGES = [
   /* HOME / HUB                                                            */
   /* ===================================================================== */
   {
-    slug: "home", layout: "hub", icon: "hub",
+    slug: "home", layout: "hub", icon: "hub", nav: { en: "Home", zh: "首頁" },
     title:    { en: "Agent Workflow Patterns", zh: "Agent 工作流模式" },
     subtitle: { en: "Five workflow patterns + the autonomous agent — the building blocks of effective LLM systems, with a citation behind every claim. Start with the concept, then dive into each pattern.",
                 zh: "五種工作流模式 ＋ 一種自主代理 — 有效 LLM 系統的基本構件，每個論點都有出處。先看核心概念，再深入每個模式。" },
@@ -53,14 +53,34 @@ window.SITE_PAGES = [
       { value: 5,  label: { en: "Workflow patterns", zh: "工作流模式" } },
       { value: 3,  label: { en: "Authoritative labs", zh: "權威實驗室來源" } },
       { value: 11, label: { en: "Cited references", zh: "參考文獻" } }
-    ]
+    ],
+    /* homepage copy: the predictability ↔ autonomy spectrum, the pattern
+       ladder, and the "where next" index */
+    copy: {
+      lo:        { en: "Predictable: the path lives in your code", zh: "可預測：路徑寫死在你的程式裡" },
+      hi:        { en: "Autonomous: the LLM picks the next step", zh: "自主：LLM 自己決定下一步" },
+      workflows: { en: "Workflows", zh: "工作流" },
+      agents:    { en: "Agent", zh: "代理" },
+      axis:      { en: "Further right, more control moves from your code to the model.", zh: "越往右，控制權越從你的程式交到模型手上。" },
+      start:     { en: "Start with the core concept", zh: "從核心概念開始" },
+      compare:   { en: "Compare all six side by side", zh: "並排比較六種模式" },
+      ladderH:   { en: "Six patterns, from fixed to free", zh: "六種模式，由固定到自主" },
+      ladderSub: { en: "Each row is a wiring diagram in the same notation: red capsules are LLM calls, squares are your code or tools, diamonds are gates, dashed wires are decided at run time.",
+                   zh: "每一列都是同一套記號畫的接線圖：紅色膠囊是 LLM 呼叫，方塊是你的程式或工具，菱形是關卡，虛線代表執行時才決定的路徑。" },
+      cost:      { en: "Cost / latency", zh: "成本／延遲" },
+      bestfor:   { en: "Best for", zh: "最適合" },
+      lineH:     { en: "The real dividing line: who controls the flow", zh: "真正的分界：誰掌控流程" },
+      lineLink:  { en: "Read the core concept", zh: "讀核心概念" },
+      blockCap:  { en: "Every pattern is built from this one block: the augmented LLM.", zh: "每個模式都由這一個構件組成：被增強的 LLM。" },
+      nextH:     { en: "Keep going", zh: "接著看" }
+    }
   },
 
   /* ===================================================================== */
   /* CONCEPT — Workflow vs Agent                                           */
   /* ===================================================================== */
   {
-    slug: "concept", layout: "article", icon: "menu_book",
+    slug: "concept", layout: "article", icon: "menu_book", nav: { en: "Concept", zh: "核心概念" },
     title:    { en: "Core Concept: Workflow vs Agent", zh: "核心概念：Workflow 與 Agent" },
     subtitle: { en: "Before the six patterns: what an 'agentic system' is, the building block they all share, when to use which — and why the 'how many patterns' count differs between sources.",
                 zh: "進入六種模式之前：什麼是「agentic system」、它們共用的基礎元件、何時該用哪種，以及為什麼不同來源對「有幾種模式」說法不一。" },
@@ -72,6 +92,7 @@ window.SITE_PAGES = [
         { type: "p", text: {
           en: "Google's whitepaper frames the same idea as three layers — the model, an orchestration layer that reasons (via ReAct / Chain-of-Thought / Tree-of-Thoughts), and a tools layer that reaches the outside world. Different words, same anatomy.",
           zh: "Google 的白皮書用三層來描述同一件事 — 模型層、負責推理的協調層（用 ReAct／Chain-of-Thought／Tree-of-Thoughts），以及對外互動的工具層。用詞不同，骨架相同。" } },
+        { type: "diagram", key: "augmented" },
         { type: "quote", text: {
           en: "Workflows are systems where LLMs and tools are orchestrated through predefined code paths. Agents are systems where LLMs dynamically direct their own processes and tool usage. — Anthropic",
           zh: "工作流是『LLM 與工具透過預先定義的程式路徑被編排』的系統；代理則是『LLM 動態主導自己的流程與工具使用』的系統。— Anthropic" } }
@@ -135,7 +156,7 @@ window.SITE_PAGES = [
   /* PATTERN 1 — PROMPT CHAINING                                           */
   /* ===================================================================== */
   {
-    slug: "chaining", layout: "article", icon: "link",
+    slug: "chaining", layout: "article", icon: "link", nav: { en: "Chaining", zh: "提示鏈" }, diagram: "chaining",
     title:    { en: "1 · Prompt Chaining", zh: "1 · 提示鏈 Prompt Chaining" },
     subtitle: { en: "Workflow · Decompose a task into a fixed sequence of steps; each LLM call processes the previous output, with optional checks between.",
                 zh: "工作流 · 把任務拆成固定的循序步驟，每步 LLM 呼叫處理上一步的輸出，中間可加檢查。" },
@@ -194,7 +215,7 @@ window.SITE_PAGES = [
   /* PATTERN 2 — ROUTING                                                   */
   /* ===================================================================== */
   {
-    slug: "routing", layout: "article", icon: "alt_route",
+    slug: "routing", layout: "article", icon: "alt_route", nav: { en: "Routing", zh: "路由" }, diagram: "routing",
     title:    { en: "2 · Routing", zh: "2 · 路由 Routing" },
     subtitle: { en: "Workflow · Classify the input first, then send it to a specialized follow-up — a different prompt, tool chain, or model.",
                 zh: "工作流 · 先把輸入分類，再分派給專門的後續處理 —— 不同的提示、工具鏈或模型。" },
@@ -250,7 +271,7 @@ window.SITE_PAGES = [
   /* PATTERN 3 — PARALLELIZATION                                           */
   /* ===================================================================== */
   {
-    slug: "parallelization", layout: "article", icon: "account_tree",
+    slug: "parallelization", layout: "article", icon: "account_tree", nav: { en: "Parallel", zh: "平行化" }, diagram: "parallelization",
     title:    { en: "3 · Parallelization", zh: "3 · 平行化 Parallelization" },
     subtitle: { en: "Workflow · Run multiple LLM calls at once and aggregate the results. Two variants: sectioning and voting.",
                 zh: "工作流 · 同時跑多個 LLM 呼叫再彙整結果。兩種變體：分節（sectioning）與投票（voting）。" },
@@ -311,7 +332,7 @@ window.SITE_PAGES = [
   /* PATTERN 4 — ORCHESTRATOR-WORKERS                                      */
   /* ===================================================================== */
   {
-    slug: "orchestrator", layout: "article", icon: "hub",
+    slug: "orchestrator", layout: "article", icon: "hub", nav: { en: "Orchestrator", zh: "協調者" }, diagram: "orchestrator",
     title:    { en: "4 · Orchestrator–Workers", zh: "4 · 協調者—工作者 Orchestrator–Workers" },
     subtitle: { en: "Workflow · A central LLM dynamically breaks down the task, delegates to worker LLMs, and synthesizes their results.",
                 zh: "工作流 · 由中央 LLM 動態拆解任務、分派給工作者 LLM，再彙整它們的結果。" },
@@ -370,7 +391,7 @@ window.SITE_PAGES = [
   /* PATTERN 5 — EVALUATOR-OPTIMIZER                                       */
   /* ===================================================================== */
   {
-    slug: "evaluator", layout: "article", icon: "rate_review",
+    slug: "evaluator", layout: "article", icon: "rate_review", nav: { en: "Evaluator", zh: "評估者" }, diagram: "evaluator",
     title:    { en: "5 · Evaluator–Optimizer", zh: "5 · 評估者—優化者 Evaluator–Optimizer" },
     subtitle: { en: "Workflow · One LLM generates a response while another evaluates and gives feedback, in a loop — iterative refinement.",
                 zh: "工作流 · 一個 LLM 產生回應，另一個評估並回饋，形成迴圈 —— 反覆迭代精修。" },
@@ -426,7 +447,7 @@ window.SITE_PAGES = [
   /* PATTERN 6 — AUTONOMOUS AGENTS                                         */
   /* ===================================================================== */
   {
-    slug: "agent", layout: "article", icon: "smart_toy",
+    slug: "agent", layout: "article", icon: "smart_toy", nav: { en: "Agent", zh: "自主代理" }, diagram: "agent",
     title:    { en: "6 · Autonomous Agents", zh: "6 · 自主代理 Autonomous Agents" },
     subtitle: { en: "Agent · No fixed path. The LLM plans and acts in a loop, using tools and environmental feedback to direct itself toward a goal.",
                 zh: "代理 · 沒有固定路徑。LLM 在迴圈中規劃並行動，靠工具與環境回饋自我導向達成目標。" },
@@ -505,7 +526,7 @@ window.SITE_PAGES = [
   /* COMPARE — table of all six patterns                                   */
   /* ===================================================================== */
   {
-    slug: "compare", layout: "table", icon: "table_rows",
+    slug: "compare", layout: "table", icon: "table_rows", nav: { en: "Compare", zh: "比較" },
     title:    { en: "Compare the Six Patterns", zh: "六種模式比較" },
     subtitle: { en: "Side by side on control flow, cost/latency, best fit and a representative example. Filter by kind, sort any column.",
                 zh: "在控制流程、成本／延遲、最適情境與代表範例上並列比較。可依類型篩選、任意欄位排序。" },
@@ -518,32 +539,32 @@ window.SITE_PAGES = [
       { key: "example", label: { en: "Example", zh: "代表範例" }, type: "text" }
     ],
     rows: [
-      { pattern: { en: "Prompt chaining", zh: "提示鏈" }, kind: { en: "Workflow", zh: "工作流" },
+      { pattern: { en: "Prompt chaining", zh: "提示鏈" }, slug: "chaining", costLevel: 2, kind: { en: "Workflow", zh: "工作流" },
         control: { en: "Fixed sequence, gates between steps", zh: "固定序列，步驟間設關卡" },
         cost: { en: "Low–medium", zh: "低～中" },
         bestfor: { en: "Cleanly decomposable fixed subtasks", zh: "能乾淨拆成固定子任務" },
         example: { en: "Write copy → translate it", zh: "寫文案 → 翻譯" } },
-      { pattern: { en: "Routing", zh: "路由" }, kind: { en: "Workflow", zh: "工作流" },
+      { pattern: { en: "Routing", zh: "路由" }, slug: "routing", costLevel: 1, kind: { en: "Workflow", zh: "工作流" },
         control: { en: "Classify, then branch to a handler", zh: "先分類，再分支到處理器" },
         cost: { en: "Low (+1 classify)", zh: "低（多一次分類）" },
         bestfor: { en: "Distinct categories handled separately", zh: "明確類別、分開處理更好" },
         example: { en: "Triage support tickets", zh: "客服工單分流" } },
-      { pattern: { en: "Parallelization", zh: "平行化" }, kind: { en: "Workflow", zh: "工作流" },
+      { pattern: { en: "Parallelization", zh: "平行化" }, slug: "parallelization", costLevel: 3, kind: { en: "Workflow", zh: "工作流" },
         control: { en: "Fan out, then aggregate (sectioning / voting)", zh: "展開後彙整（分節／投票）" },
         cost: { en: "Higher (×N calls)", zh: "較高（×N 次呼叫）" },
         bestfor: { en: "Independent subtasks; multiple attempts", zh: "獨立子任務；多次嘗試" },
         example: { en: "Many prompts vote on code safety", zh: "多提示投票判程式安全" } },
-      { pattern: { en: "Orchestrator–workers", zh: "協調者—工作者" }, kind: { en: "Workflow", zh: "工作流" },
+      { pattern: { en: "Orchestrator–workers", zh: "協調者—工作者" }, slug: "orchestrator", costLevel: 4, kind: { en: "Workflow", zh: "工作流" },
         control: { en: "Central LLM splits subtasks at run time", zh: "中央 LLM 執行時動態拆子任務" },
         cost: { en: "High", zh: "高" },
         bestfor: { en: "Subtasks can't be predicted up front", zh: "子任務無法事先預測" },
         example: { en: "Edit code across many files", zh: "跨多檔修改程式" } },
-      { pattern: { en: "Evaluator–optimizer", zh: "評估者—優化者" }, kind: { en: "Workflow", zh: "工作流" },
+      { pattern: { en: "Evaluator–optimizer", zh: "評估者—優化者" }, slug: "evaluator", costLevel: 3, kind: { en: "Workflow", zh: "工作流" },
         control: { en: "Generate → evaluate → refine, looped", zh: "生成 → 評估 → 精修，迴圈" },
         cost: { en: "Medium–high (loop)", zh: "中～高（迴圈）" },
         bestfor: { en: "Clear criteria; refinement adds value", zh: "標準明確；精修有價值" },
         example: { en: "Literary translation with feedback", zh: "帶回饋的文學翻譯" } },
-      { pattern: { en: "Autonomous agent", zh: "自主代理" }, kind: { en: "Agent", zh: "代理" },
+      { pattern: { en: "Autonomous agent", zh: "自主代理" }, slug: "agent", costLevel: 5, kind: { en: "Agent", zh: "代理" },
         control: { en: "LLM directs itself in a tool loop", zh: "LLM 在工具迴圈中自我導向" },
         cost: { en: "Highest, variable", zh: "最高、浮動" },
         bestfor: { en: "Open-ended; steps can't be hardcoded", zh: "開放性；步驟無法寫死" },
@@ -555,7 +576,7 @@ window.SITE_PAGES = [
   /* PRACTICE — glossary + flashcards + quiz (custom layout)               */
   /* ===================================================================== */
   {
-    slug: "practice", layout: "practice", icon: "school",
+    slug: "practice", layout: "practice", icon: "school", nav: { en: "Practice", zh: "練習" },
     title:    { en: "Practice", zh: "練習" },
     subtitle: { en: "Make it stick: look up the jargon, flip the cards, then test yourself. Everything lives in this session only.",
                 zh: "讓它記得住：查術語、翻卡片、再考自己。所有作答只活在這次瀏覽，重整即歸零。" },
@@ -716,7 +737,7 @@ window.SITE_PAGES = [
   /* SOURCES — table of references                                         */
   /* ===================================================================== */
   {
-    slug: "sources", layout: "table", icon: "menu_book",
+    slug: "sources", layout: "table", icon: "menu_book", nav: { en: "Sources", zh: "來源" },
     title:    { en: "Sources & References", zh: "參考來源" },
     subtitle: { en: "Every claim on this site traces back to a primary or authoritative source. Filter by origin, open any link.",
                 zh: "本站每個論點都能追溯到一手或權威來源。可依出處篩選，點任一連結開啟。" },

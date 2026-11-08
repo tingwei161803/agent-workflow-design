@@ -1,12 +1,13 @@
 /* =========================================================================
    multipage · shell.js   (vanilla, no build)
 
-   The SHARED CHROME for every page: app bar, cross-page nav, footer and the
-   detail <dialog>. It also owns global state (language + theme) and exposes a
-   tiny toolkit on window.LDW that each page's app.js reuses.
+   The SHARED CHROME for every page: app bar, cross-page nav, footer title
+   block and the detail <dialog>. It also owns global state (language + theme)
+   and exposes a tiny toolkit on window.LDW that each page's app.js reuses.
 
    Loaded on EVERY page BEFORE app.js. It:
-     1. reads the language from <html lang> and the theme from localStorage,
+     1. reads the language from <html lang> and the theme from localStorage
+        (falling back to the system's prefers-color-scheme),
      2. injects app bar + nav + footer + dialog around <main id="page">,
      3. wires the theme toggle and points the language link at this page's
         counterpart in the other language,
@@ -14,8 +15,8 @@
 
    Language belongs to the URL, not to the visitor: the Chinese pages live at
    the root and the English ones under /en/, so switching language is a
-   navigation rather than an in-place repaint. Theme still persists in
-   localStorage (an origin-wide store) and survives moving between pages.
+   navigation rather than an in-place repaint. Theme persists in localStorage
+   only once the visitor has actually chosen one with the toggle.
    ========================================================================= */
 (function () {
   "use strict";
@@ -25,13 +26,31 @@
 
   /* ---------- chrome i18n (page content strings live in the data) ---------- */
   var I18N = {
-    en: { close: "Close", menu: "Pages", skip: "Skip to content" },
-    zh: { close: "關閉", menu: "頁面", skip: "跳到內容" }
+    en: { close: "Close", menu: "Pages", skip: "Skip to content", legend: "Notation",
+          sheet: "Sheet", of: "of", theme: "Switch light / dark", star: "Star on GitHub",
+          home: "Back to peteraim.com", toTwin: "切換到中文版" },
+    zh: { close: "關閉", menu: "頁面", skip: "跳到內容", legend: "圖例",
+          sheet: "圖號", of: "／", theme: "切換淺色／深色", star: "在 GitHub 給星星",
+          home: "返回 peteraim.com", toTwin: "View in English" }
   };
 
-  /* ---------- sandbox-safe localStorage ---------- */
+  /* ---------- tiny inline icons (no icon font) ---------- */
+  var ICON = {
+    sun:  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    star: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m12 3.2 2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+    home: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5.5v-5.5h-5V20H4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    close: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+    linkedin: '<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>',
+    /* brand mark: the site's node grammar in one line — LLM call, wire, gate */
+    mark: '<svg class="brand__mark" viewBox="0 0 40 24" width="40" height="24" aria-hidden="true"><path class="dg-wire" d="M4 12H36"/><rect class="dg-llm" x="5" y="6" width="16" height="12" rx="6"/><path class="dg-gate" d="M30 5 37 12 30 19 23 12Z"/></svg>'
+  };
+
+  /* ---------- sandbox-safe storage ---------- */
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
+  function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+  function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { /* ignore */ } }
 
   /* ---------- global state ----------
      The URL decides the language, so <html lang> is what we read. localStorage
@@ -54,9 +73,13 @@
     return TWIN_DIR + path;
   }
 
+  var darkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function systemTheme() { return darkQuery && darkQuery.matches ? "dark" : "light"; }
+  var saved = lsGet("theme");
+
   var state = {
     lang:  langFromDocument(),
-    theme: lsGet("theme") || "dark"
+    theme: saved === "dark" || saved === "light" ? saved : systemTheme()
   };
 
   /* ---------- helpers shared with app.js ---------- */
@@ -80,6 +103,19 @@
     for (var i = 0; i < PAGES.length; i++) if (PAGES[i].slug === slug) return PAGES[i];
     return PAGES[0] || null;
   }
+  function pageIndex(slug) {
+    for (var i = 0; i < PAGES.length; i++) if (PAGES[i].slug === slug) return i;
+    return 0;
+  }
+  /* pattern pages carry a diagram; their number is their place on the spectrum */
+  function patternNo(p) {
+    var n = 0;
+    for (var i = 0; i < PAGES.length; i++) {
+      if (PAGES[i].diagram) n++;
+      if (PAGES[i] === p) return p.diagram ? n : 0;
+    }
+    return 0;
+  }
 
   /* =======================================================================
      CHROME INJECTION — app bar, nav, footer, dialog around <main id="page">
@@ -100,26 +136,23 @@
     appbar.className = "appbar";
     appbar.innerHTML =
       '<div class="appbar__inner">' +
-        '<a class="brand" href="index.html">' +
-          '<span class="material-symbols-rounded brand__logo">hub</span>' +
+        '<a class="brand" href="index.html">' + ICON.mark +
           '<span class="brand__name" id="brandName"></span>' +
         '</a>' +
         '<div class="appbar__actions">' +
           (META.repo ?
             '<a class="gh-star" id="ghStar" href="https://github.com/' + META.repo + '" target="_blank" rel="noopener" ' +
-              'data-repo="' + META.repo + '" title="Star on GitHub" aria-label="Star on GitHub / 在 GitHub 給星星">' +
-              '<span class="material-symbols-rounded gh-star__icon" aria-hidden="true">star</span>' +
-              '<span class="gh-star__count" id="ghStarCount">★</span>' +
+              'data-repo="' + META.repo + '" title="' + escapeHtml(ui("star")) + '" aria-label="' + escapeHtml(ui("star")) + '">' +
+              ICON.star + '<span class="gh-star__count" id="ghStarCount" hidden></span>' +
             '</a>' : "") +
-          '<a class="icon-btn" id="langToggle" href="' + escapeHtml(altLangHref()) + '" ' +
+          '<a class="icon-btn icon-btn--lang" id="langToggle" href="' + escapeHtml(altLangHref()) + '" ' +
              'hreflang="' + (state.lang === "en" ? "zh-Hant" : "en") + '" rel="alternate" ' +
-             'title="Language" aria-label="' +
-             (state.lang === "en" ? "切換到中文版 / View in Chinese" : "View in English / 切換到英文版") + '">' +
-            '<span class="material-symbols-rounded">translate</span>' +
-            '<span class="icon-btn__txt" id="langLabel"></span>' +
+             'lang="' + (state.lang === "en" ? "zh-Hant" : "en") + '" ' +
+             'title="' + escapeHtml(ui("toTwin")) + '" aria-label="' + escapeHtml(ui("toTwin")) + '">' +
+            '<span id="langLabel"></span>' +
           '</a>' +
-          '<button class="icon-btn" id="themeToggle" type="button" title="Theme" aria-label="Toggle theme / 切換主題">' +
-            '<span class="material-symbols-rounded" id="themeIcon">dark_mode</span>' +
+          '<button class="icon-btn" id="themeToggle" type="button" title="' + escapeHtml(ui("theme")) + '" aria-label="' + escapeHtml(ui("theme")) + '">' +
+            '<span id="themeIcon"></span>' +
           '</button>' +
         '</div>' +
       '</div>';
@@ -132,19 +165,34 @@
     nav.innerHTML = '<div class="pagenav__inner" id="pageNavInner"></div>';
     document.body.insertBefore(nav, main);
 
-    /* footer */
+    /* footer: an engineering-drawing title block */
     var footer = document.createElement("footer");
     footer.className = "footer";
-    footer.innerHTML = '<p id="footerText"></p>' +
-      '<div class="profile-links" style="display:flex;gap:12px;justify-content:center;align-items:center;margin-top:10px">' +
-        '<a class="icon-btn" href="https://www.peteraim.com" target="_blank" rel="noopener" title="Home" aria-label="Back to peteraim.com / 返回首頁">' +
-          '<span class="material-symbols-rounded">home</span>' +
-        '</a>' +
-        '<a class="icon-btn" href="https://www.linkedin.com/in/ai-med/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn (opens in new tab)">' +
-          '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>' +
-        '</a>' +
+    footer.innerHTML =
+      '<div class="titleblock">' +
+        '<div class="tb-cell tb-cell--title"><b id="footerTitle"></b><span id="footerText"></span></div>' +
+        '<div class="tb-cell tb-cell--legend"><span class="tb-key" id="footerLegendKey"></span><div id="footerLegend"></div></div>' +
+        '<div class="tb-cell tb-cell--sheet"><span class="tb-key" id="footerSheetKey"></span><b class="tb-sheet" id="footerSheet"></b></div>' +
+        '<div class="tb-cell tb-cell--links">' +
+          '<span id="footerLang"></span>' +
+          '<span class="profile-links">' +
+            '<a class="icon-btn" href="https://www.peteraim.com" target="_blank" rel="noopener" title="Home" aria-label="' + escapeHtml(ui("home")) + '">' + ICON.home + '</a>' +
+            '<a class="icon-btn" href="https://www.linkedin.com/in/ai-med/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn (opens in new tab)">' + ICON.linkedin + '</a>' +
+          '</span>' +
+        '</div>' +
       '</div>';
     main.parentNode.insertBefore(footer, main.nextSibling);
+
+    /* The static pages carry a plain "English version / 中文版" link after the
+       scripts so crawlers and no-JS readers can reach the twin page. With JS on,
+       it moves into the title block instead of floating under the footer. */
+    var alt = document.querySelector(".lang-alt-link");
+    var altSlot = document.getElementById("footerLang");
+    if (alt && altSlot) {
+      var a = alt.querySelector("a");
+      if (a) { a.className = "tb-lang"; altSlot.appendChild(a); }
+      alt.parentNode.removeChild(alt);
+    }
 
     /* shared detail dialog (used by card layouts) */
     var dialog = document.createElement("dialog");
@@ -154,41 +202,57 @@
     dialog.innerHTML =
       '<div class="dialog__bar">' +
         '<span class="dialog__spacer"></span>' +
-        '<button class="icon-btn" id="dialogClose" type="button" aria-label="Close / 關閉">' +
-          '<span class="material-symbols-rounded">close</span>' +
-        '</button>' +
+        '<button class="icon-btn" id="dialogClose" type="button" aria-label="Close / 關閉">' + ICON.close + '</button>' +
       '</div>' +
       '<div class="dialog__body" id="dialogBody"></div>';
     document.body.appendChild(dialog);
 
-    /* dialog wiring (shared close behaviour; deep links handled by app.js) */
     document.getElementById("dialogClose").addEventListener("click", function () {
       if (dialog.open) dialog.close();
     });
     dialog.addEventListener("click", function (e) { if (e.target === dialog) dialog.close(); });
   }
 
+  /* nav: short text labels, patterns numbered by their place on the spectrum.
+     On narrow screens it scrolls sideways; edge fades show there is more. */
   function paintNav() {
     var inner = document.getElementById("pageNavInner");
     if (!inner) return;
     inner.innerHTML = "";
     var here = currentSlug();
+    var group = null;
     PAGES.forEach(function (p) {
+      var g = p.diagram ? "patterns" : (p.slug === "home" || p.slug === "concept" ? "intro" : "study");
+      if (group && g !== group) {
+        var sep = document.createElement("span");
+        sep.className = "navsep";
+        sep.setAttribute("aria-hidden", "true");
+        inner.appendChild(sep);
+      }
+      group = g;
       var a = document.createElement("a");
-      a.className = "navpill" + (p.slug === here ? " navpill--active" : "");
+      a.className = "navlink" + (p.slug === here ? " navlink--active" : "");
       a.href = pageHref(p);
       if (p.slug === here) a.setAttribute("aria-current", "page");
-      a.innerHTML =
-        '<span class="material-symbols-rounded" aria-hidden="true">' +
-          escapeHtml(p.icon || "label") + "</span>" +
-        "<span>" + escapeHtml(t(p.title)) + "</span>";
+      var no = patternNo(p);
+      a.innerHTML = (no ? '<span class="navlink__no">' + no + "</span>" : "") +
+        "<span>" + escapeHtml(t(p.nav || p.title)) + "</span>";
+      a.title = t(p.title);
       inner.appendChild(a);
     });
-    /* keep the active pill in view within the scrolling nav */
-    var active = inner.querySelector(".navpill--active");
-    if (active && active.scrollIntoView) {
-      active.scrollIntoView({ block: "nearest", inline: "center" });
+    var nav = document.getElementById("pageNav");
+    function edges() {
+      var max = inner.scrollWidth - inner.clientWidth;
+      nav.classList.toggle("pagenav--more-left", inner.scrollLeft > 4);
+      nav.classList.toggle("pagenav--more-right", inner.scrollLeft < max - 4);
     }
+    var active = inner.querySelector(".navlink--active");
+    if (active && inner.scrollWidth > inner.clientWidth) {
+      inner.scrollLeft = Math.max(0, active.offsetLeft - (inner.clientWidth - active.offsetWidth) / 2);
+    }
+    inner.addEventListener("scroll", edges, { passive: true });
+    window.addEventListener("resize", edges);
+    edges();
   }
 
   /* ---------- chrome text in the active language ---------- */
@@ -196,12 +260,25 @@
     var page = currentPage();
     var siteTitle = t(META.title);
     var pageTitle = page ? t(page.title) : "";
-    document.title = pageTitle ? pageTitle + " · " + siteTitle : siteTitle;
+    if (page && page.slug !== "home") document.title = pageTitle + " · " + siteTitle;
 
     var brand = document.getElementById("brandName");
     if (brand) brand.textContent = siteTitle;
+    var ft = document.getElementById("footerTitle");
+    if (ft) ft.textContent = siteTitle;
     var foot = document.getElementById("footerText");
     if (foot) foot.textContent = t(META.footer);
+    var lk = document.getElementById("footerLegendKey");
+    if (lk) lk.textContent = ui("legend");
+    var lg = document.getElementById("footerLegend");
+    if (lg && window.AWD) lg.innerHTML = window.AWD.legend(state.lang);
+    var sk = document.getElementById("footerSheetKey");
+    if (sk) sk.textContent = ui("sheet");
+    var sh = document.getElementById("footerSheet");
+    if (sh && page) {
+      var n = pageIndex(page.slug) + 1, total = PAGES.length;
+      sh.textContent = state.lang === "zh" ? n + "／" + total : n + " of " + total;
+    }
     var skip = document.getElementById("skipLink");
     if (skip) skip.textContent = ui("skip");
     var nav = document.getElementById("pageNav");
@@ -217,21 +294,32 @@
   function applyTheme() {
     document.documentElement.setAttribute("data-theme", state.theme);
     var icon = document.getElementById("themeIcon");
-    if (icon) icon.textContent = state.theme === "dark" ? "light_mode" : "dark_mode";
-    lsSet("theme", state.theme);
+    if (icon) icon.innerHTML = state.theme === "dark" ? ICON.sun : ICON.moon;
+    var tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) tc.setAttribute("content", state.theme === "dark" ? "#0F1722" : "#EDF1F4");
   }
-  /* The toggle is a link now, so it is labelled with the language it leads TO,
-     not the one already on screen. */
+  /* The toggle is a link, so it is labelled with the language it leads TO. */
   function applyLangChrome() {
     var label = document.getElementById("langLabel");
-    if (label) label.textContent = state.lang === "en" ? "中" : "EN";
+    if (label) label.textContent = state.lang === "en" ? "中文" : "EN";
   }
 
   function wire() {
     document.getElementById("themeToggle").addEventListener("click", function () {
       state.theme = state.theme === "dark" ? "light" : "dark";
+      lsSet("theme", state.theme);          // only an explicit choice is remembered
       applyTheme();
     });
+    /* no saved choice: keep following the system setting live */
+    if (darkQuery && !lsGet("theme")) {
+      var follow = function () {
+        if (lsGet("theme")) return;
+        state.theme = systemTheme();
+        applyTheme();
+      };
+      if (darkQuery.addEventListener) darkQuery.addEventListener("change", follow);
+      else if (darkQuery.addListener) darkQuery.addListener(follow);
+    }
   }
 
   /* =======================================================================
@@ -243,31 +331,50 @@
     t: t, ui: ui, escapeHtml: escapeHtml, r: r,
     lsGet: lsGet, lsSet: lsSet,
     pages: PAGES, meta: META,
-    currentPage: currentPage, currentSlug: currentSlug, pageHref: pageHref,
+    currentPage: currentPage, currentSlug: currentSlug, pageHref: pageHref, patternNo: patternNo,
     refreshChrome: refreshChrome,
     dialog: function () { return document.getElementById("dialog"); }
   };
 
   /* =======================================================================
-     INIT
+     GitHub star count — public API, no auth. Cached for the session so we
+     ask GitHub at most once per visit; on any failure (offline, 403 rate
+     limit) or a zero count the number stays hidden and the link still works.
      ===================================================================== */
-  /* ---------- GitHub star count (public API, no auth, silent fallback) ---------- */
   function fmtStars(n) {
     return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : String(n);
+  }
+  function showStars(el, n) {
+    if (n > 0) { el.textContent = fmtStars(n); el.hidden = false; }
+    else { el.textContent = ""; el.hidden = true; }
   }
   function loadStars() {
     var a = document.getElementById("ghStar");
     var el = document.getElementById("ghStarCount");
-    if (!a || !el || typeof fetch !== "function") return;
+    if (!a || !el) return;
     var repo = a.getAttribute("data-repo");
     if (!repo) return;
+    var key = "gh-stars:" + repo;
+    var cached = ssGet(key);
+    if (cached !== null) { showStars(el, parseInt(cached, 10) || 0); return; }
+    if (typeof fetch !== "function") return;
+    var api = "https://api.github.com/";
     try {
-      fetch("https://api.github.com/repos/" + repo)
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (j) {
-          if (j && typeof j.stargazers_count === "number") el.textContent = fmtStars(j.stargazers_count);
+      /* /rate_limit is free (it doesn't spend quota). Asking it first means a
+         rate-limited visitor never fires the 403 that browsers log as an error. */
+      fetch(api + "rate_limit")
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (rl) {
+          var left = rl && rl.resources && rl.resources.core ? rl.resources.core.remaining : 0;
+          return left > 0 ? fetch(api + "repos/" + repo) : null;
         })
-        .catch(function () { /* offline / rate-limited: leave the placeholder, link still works */ });
+        .then(function (res) { return res && res.ok ? res.json() : null; })
+        .then(function (j) {
+          var n = j && typeof j.stargazers_count === "number" ? j.stargazers_count : 0;
+          ssSet(key, String(n));          // a failure is cached as 0 too: don't retry every page
+          showStars(el, n);
+        })
+        .catch(function () { ssSet(key, "0"); showStars(el, 0); });
     } catch (e) { /* ignore */ }
   }
 
